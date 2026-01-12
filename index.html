@@ -3,224 +3,748 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lexical Alignment Explorer</title>
+    <title>LexA-Index | Lexical Alignment for LLMs</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            theme: { extend: { colors: { primary: '#2563eb', secondary: '#475569' } } }
+            theme: { 
+                extend: { 
+                    colors: { brand: '#1e3a8a', brandLight: '#3b82f6', paper: '#f8fafc' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Merriweather', 'serif'] }
+                } 
+            }
         }
     </script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         [x-cloak] { display: none !important; }
-        /* Smooth transition for table rows */
-        tr { transition: background-color 0.2s; }
-        tr:hover { background-color: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; }
+        .academic-text { font-family: 'Merriweather', serif; }
+        /* Custom scrollbar for table */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        
+        /* Optional: Visual styling for the 'ghost' options in the dropdown */
+        option.has-switch { color: #64748b; font-style: italic; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans antialiased" x-data="app()" x-init="initApp()">
+<body class="bg-paper text-slate-800 flex flex-col min-h-screen" x-data="app()" x-init="initApp()">
 
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-10">
-        <div class="max-w-5xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div>
-                <h1 class="text-xl font-bold tracking-tight text-slate-900">Lexical Alignment Explorer</h1>
-                <p class="text-xs text-slate-500">Visualizing Model Overuse vs. Human Baselines</p>
+    <!-- TOP-RIGHT TOAST -->
+    <div class="fixed top-4 right-4 z-[9999] max-w-sm w-[min(92vw,24rem)]" x-cloak>
+        <div
+            x-show="toast.show"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 translate-y-[-6px]"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 translate-y-[-6px]"
+            class="bg-white border border-slate-200 shadow-lg rounded-xl p-4"
+            role="status"
+            aria-live="polite"
+        >
+            <div class="flex items-start gap-3">
+                <div class="mt-0.5">
+                    <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <div class="text-sm font-semibold text-slate-900" x-text="toast.title"></div>
+                    <div class="text-sm text-slate-600 mt-0.5" x-text="toast.message"></div>
+                    <div class="text-xs text-slate-400 mt-2" x-show="toast.hint" x-text="toast.hint"></div>
+                </div>
+                <button
+                    class="p-1 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition"
+                    @click="hideToast()"
+                    aria-label="Dismiss"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
-            <div class="space-x-4 text-sm font-medium text-slate-500">
-                <a href="#" class="hover:text-primary transition">About</a>
-                <a href="https://github.com/nyu-mll" class="hover:text-primary transition">GitHub</a>
+        </div>
+    </div>
+
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <a href="#" class="text-xl font-bold tracking-tight text-slate-900">LexA-Index</a>
+                <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] uppercase font-semibold bg-brand/10 text-brand rounded-full tracking-wide">Beta</span>
+            </div>
+            <div class="flex items-center space-x-6 text-sm font-medium text-slate-600">
+                <a href="#" class="hover:text-brand transition">Explorer</a>
+                <a href="about.html" class="hover:text-brand transition">About</a>
+                <a href="https://github.com/fsu-nlp/lexa-index" target="_blank" class="hover:text-slate-900 transition">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-gradient-to-b from-slate-900 to-slate-800 text-white pt-16 pb-12 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Lexical Alignment Index</h1>
+            <div class="prose prose-lg prose-invert mx-auto opacity-90 academic-text leading-relaxed max-w-2xl">
+                <p>Identifying words significantly overused by AI compared to human baselines across languages, registers, and architectures.</p>
             </div>
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-4 py-8">
-        
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 mb-8">
-            <div class="flex flex-col md:flex-row items-center justify-center gap-3 text-lg md:text-xl text-slate-700">
-                <span>Show me overused words in</span>
-                
-                <select x-model="selection.lang" @change="fetchData" class="font-bold text-primary border-b-2 border-primary/30 bg-transparent py-1 px-2 focus:outline-none focus:border-primary cursor-pointer hover:bg-slate-50 rounded">
-                    <template x-for="l in options.languages" :key="l">
-                        <option :value="l" x-text="l.toUpperCase()"></option>
-                    </template>
-                </select>
-
-                <span>texts from</span>
-
-                <select x-model="selection.register" @change="fetchData" class="font-bold text-primary border-b-2 border-primary/30 bg-transparent py-1 px-2 focus:outline-none focus:border-primary cursor-pointer hover:bg-slate-50 rounded">
-                    <template x-for="r in options.registers" :key="r">
-                        <option :value="r" x-text="capitalize(r)"></option>
-                    </template>
-                </select>
-
-                <span>generated by</span>
-
-                <select x-model="selection.model" @change="fetchData" class="font-bold text-primary border-b-2 border-primary/30 bg-transparent py-1 px-2 focus:outline-none focus:border-primary cursor-pointer hover:bg-slate-50 rounded">
-                    <template x-for="m in options.models" :key="m">
-                        <option :value="m" x-text="formatModel(m)"></option>
-                    </template>
-                </select>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <main class="flex-grow max-w-6xl mx-auto px-4 -mt-8 w-full z-10 mb-12">
+        <div class="bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden">
             
-            <div class="lg:col-span-2 space-y-4">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-semibold text-slate-800">Top Divergent Words</h2>
-                    <div class="bg-slate-100 p-1 rounded-lg flex text-xs font-medium">
-                        <button @click="view = 'chart'" :class="{'bg-white shadow text-slate-900': view === 'chart', 'text-slate-500': view !== 'chart'}" class="px-3 py-1 rounded-md transition">Chart</button>
-                        <button @click="view = 'table'" :class="{'bg-white shadow text-slate-900': view === 'table', 'text-slate-500': view !== 'table'}" class="px-3 py-1 rounded-md transition">Table</button>
-                    </div>
-                </div>
-
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 h-96 relative">
-                    <div x-show="loading" class="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                    </div>
-
-                    <div x-show="view === 'chart'" class="h-full w-full">
-                        <canvas id="mainChart"></canvas>
+            <div class="bg-slate-50 border-b border-slate-200 p-8 text-center">
+                <div class="inline-block text-lg md:text-2xl text-slate-600 leading-loose">
+                    Show me the words that
+                    
+                    <div class="relative inline-block mx-1 group">
+                        <select x-model="selection.model" @change="onModelChange"
+                                class="appearance-none font-bold text-brand bg-transparent border-b-2 border-brand/20 py-1 pr-6 pl-1 focus:outline-none focus:border-brand cursor-pointer hover:bg-white transition rounded-t">
+                            <template x-for="m in allModels" :key="m">
+                                <option :value="m" x-text="formatModel(m)"></option>
+                            </template>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center text-brand">
+                            <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                        </div>
                     </div>
 
-                    <div x-show="view === 'table'" class="h-full w-full overflow-y-auto" x-cloak>
-                        <table class="w-full text-sm text-left">
-                            <thead class="text-xs text-slate-500 uppercase bg-slate-50 sticky top-0">
-                                <tr>
-                                    <th class="px-4 py-3">Rank</th>
-                                    <th class="px-4 py-3">Word</th>
-                                    <th class="px-4 py-3 text-right">Score</th>
-                                    <th class="px-4 py-3 text-right">Freq (AI)</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100">
-                                <template x-for="row in data" :key="row.rank">
-                                    <tr>
-                                        <td class="px-4 py-3 text-slate-500" x-text="row.rank"></td>
-                                        <td class="px-4 py-3 font-medium text-slate-900" x-text="row.word"></td>
-                                        <td class="px-4 py-3 text-right font-mono text-primary" x-text="row.score"></td>
-                                        <td class="px-4 py-3 text-right text-slate-500" x-text="row.ai_freq"></td>
-                                    </tr>
-                                </template>
-                            </tbody>
-                        </table>
+                    overuses in
+
+                    <div class="relative inline-block mx-1">
+                        <select x-model="selection.register"
+                                @click="maybeToastLimited('register')"
+                                @focus="maybeToastLimited('register')"
+                                @change="onRegisterChange"
+                                class="appearance-none font-bold text-brand bg-transparent border-b-2 border-brand/20 py-1 pr-6 pl-1 focus:outline-none focus:border-brand cursor-pointer hover:bg-white transition rounded-t">
+                            <template x-for="r in allRegistersForModel" :key="r">
+                                <option :value="r" 
+                                        :class="getRegisterAvailability(r).available ? '' : 'has-switch'"
+                                        x-text="getRegisterLabel(r)">
+                                </option>
+                            </template>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center text-brand">
+                            <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 0 010-1.414z"/></svg>
+                        </div>
                     </div>
+
+                    texts in
+
+                    <div class="relative inline-block mx-1">
+                        <select x-model="selection.lang"
+                                @click="maybeToastLimited('lang')"
+                                @focus="maybeToastLimited('lang')"
+                                @change="onLangChange"
+                                class="appearance-none font-bold text-brand bg-transparent border-b-2 border-brand/20 py-1 pr-6 pl-1 focus:outline-none focus:border-brand cursor-pointer hover:bg-white transition rounded-t">
+                            <template x-for="l in allLanguagesForModel" :key="l">
+                                <option :value="l" 
+                                        :class="getLangAvailability(l).available ? '' : 'has-switch'"
+                                        x-text="getLangLabel(l)">
+                                </option>
+                            </template>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center text-brand">
+                            <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 0 010-1.414z"/></svg>
+                        </div>
+                    </div>
+                    .
                 </div>
             </div>
 
-            <div class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 min-h-[500px]">
                 
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                    <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Summary</h3>
-                    <div class="space-y-4">
+                <div class="lg:col-span-8 p-6 relative flex flex-col border-b lg:border-b-0 lg:border-r border-slate-200">
+                    
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                         <div>
-                            <div class="text-3xl font-bold text-slate-900" x-text="data.length > 0 ? data[0].word : '-'"></div>
-                            <div class="text-xs text-slate-500">Most overused word</div>
+                            <h2 class="font-semibold text-slate-800">Top Divergent Words</h2>
+                            <p class="text-[11px] text-slate-500 font-medium mt-1">
+                                (<span x-text="formatK(meta.total_tokens)"></span> AI tokens vs 
+                                <span x-text="formatK(meta.total_tokens)"></span> human tokens across 
+                                <span x-text="formatK(meta.n_pairs)"></span> document pairs)
+                            </p>
                         </div>
-                        <hr class="border-slate-100">
-                        <div>
-                            <div class="text-2xl font-bold text-slate-900" x-text="data.length"></div>
-                            <div class="text-xs text-slate-500">Words analyzed</div>
+
+                        <div class="flex flex-wrap gap-3">
+                            <div class="flex bg-slate-100 p-1 rounded-lg">
+                                <button @click="setFilter('all')" :class="filterMode === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-3 py-1 rounded-md text-xs font-medium transition">All</button>
+                                <button @click="setFilter('content')" :class="filterMode === 'content' ? 'bg-white text-brand shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-3 py-1 rounded-md text-xs font-medium transition">Content</button>
+                                <button @click="setFilter('function')" :class="filterMode === 'function' ? 'bg-white text-purple-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-3 py-1 rounded-md text-xs font-medium transition">Func</button>
+                            </div>
+
+                            <div class="flex bg-slate-100 p-1 rounded-lg">
+                                <button @click="view = 'chart'" :class="view === 'chart' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-3 py-1 rounded-md text-xs font-medium transition">Chart</button>
+                                <button @click="view = 'table'" :class="view === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-3 py-1 rounded-md text-xs font-medium transition">Table</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div x-show="loading" class="absolute inset-0 bg-white/90 z-20 flex items-center justify-center backdrop-blur-[1px]">
+                        <div class="flex flex-col items-center gap-3">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand"></div>
+                            <span class="text-sm font-medium text-slate-500">Processing Lexical Data...</span>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow relative min-h-[400px]">
+                        <div x-show="view === 'chart'" class="h-full w-full absolute inset-0">
+                            <canvas id="mainChart"></canvas>
+                        </div>
+                        
+                        <div x-show="view === 'table'" x-cloak class="h-full w-full absolute inset-0 overflow-y-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="text-xs text-slate-500 uppercase bg-slate-50 sticky top-0 border-b border-slate-200 z-10">
+                                    <tr>
+                                        <th class="px-4 py-3 bg-slate-50">Rank</th>
+                                        <th class="px-4 py-3 bg-slate-50">Word</th>
+                                        <th class="px-4 py-3 bg-slate-50">POS</th>
+                                        <th class="px-4 py-3 text-right bg-slate-50">Score</th>
+                                        <th class="px-4 py-3 text-right bg-slate-50">OPM</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <template x-for="row in displayData" :key="row.rank">
+                                        <tr class="hover:bg-slate-50 transition-colors">
+                                            <td class="px-4 py-2.5 text-slate-400 font-mono text-xs" x-text="row.rank"></td>
+                                            <td class="px-4 py-2.5 font-medium text-slate-800" x-text="row.word"></td>
+                                            
+                                            <td class="px-4 py-2.5">
+                                                <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset"
+                                                    :class="['NOUN','VERB','ADJ','ADV'].includes(row.upos) ? 'bg-blue-50 text-blue-700 ring-blue-700/10' : 'bg-slate-50 text-slate-600 ring-slate-500/10'" 
+                                                    x-text="row.upos || '-'">
+                                                </span>
+                                            </td>
+                                            
+                                            <td class="px-4 py-2.5 text-right font-mono text-brand font-medium" x-text="row.score"></td>
+                                            <td class="px-4 py-2.5 text-right text-slate-500 text-xs" x-text="row.ai_freq"></td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-slate-900 text-white p-6 rounded-xl shadow-lg">
-                    <h3 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-2">Get the Data</h3>
-                    <p class="text-sm text-slate-400 mb-4">Download the full TSV analysis for this configuration.</p>
-                    <button class="w-full bg-primary hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        Download .TSV
-                    </button>
-                    <div class="mt-4 pt-4 border-t border-slate-700 text-xs text-slate-500 text-center">
-                        <button @click="copyLink" x-text="linkCopied ? 'Copied!' : 'Share this view'" class="hover:text-white transition underline cursor-pointer"></button>
+                <div class="lg:col-span-4 bg-slate-50/50 p-6 flex flex-col gap-6">
+                    
+                    <!-- CHANGE: give more vertical space to the carousel by tightening the bottom area -->
+                    <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm flex flex-col flex-grow min-h-[360px] relative overflow-hidden" x-show="generatedInsights.length > 0">
+                        
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest" x-text="generatedInsights[insightIndex]?.title"></h3>
+                            
+                            <div class="flex gap-1" x-show="generatedInsights.length > 1">
+                                <button @click="prevInsight" class="p-1.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-700 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                                </button>
+                                <button @click="nextInsight" class="p-1.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-700 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex-grow flex flex-col justify-center animate-fade">
+                            
+                            <template x-if="generatedInsights[insightIndex]?.type === 'summary'">
+                                <div>
+                                    <div class="mb-6">
+                                        <div class="flex items-baseline gap-2 mb-1">
+                                            <span class="text-4xl font-bold text-slate-900 tracking-tight" x-text="'“' + generatedInsights[insightIndex].main.word + '”'"></span>
+                                        </div>
+                                        <p class="text-sm text-slate-500">
+                                            is the most divergent word overall.
+                                        </p>
+                                    </div>
+
+                                    <div class="h-px bg-slate-100 w-full mb-6"></div>
+
+                                    <div class="space-y-4">
+                                        <template x-for="cat in generatedInsights[insightIndex].leaders" :key="cat.pos">
+                                            <div class="flex items-baseline justify-between group">
+                                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wide w-16" x-text="cat.pos"></span>
+                                                <div class="flex-grow text-right">
+                                                    <span class="text-base font-semibold text-slate-700 group-hover:text-brand transition-colors" x-text="cat.word"></span>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <template x-if="generatedInsights[insightIndex]?.type !== 'summary'">
+                                <div>
+                                    <p class="text-base text-slate-600 leading-relaxed">
+                                        <span x-html="generatedInsights[insightIndex]?.text"></span>
+                                    </p>
+                                </div>
+                            </template>
+
+                        </div>
+
+                        <div class="flex justify-center gap-2 mt-6" x-show="generatedInsights.length > 1">
+                            <template x-for="(insight, idx) in generatedInsights" :key="idx">
+                                <button @click="insightIndex = idx" class="w-2 h-2 rounded-full transition-colors duration-300" :class="idx === insightIndex ? 'bg-brand' : 'bg-slate-200 hover:bg-slate-300'"></button>
+                            </template>
+                        </div>
+                    </div>
+                    
+                    <!-- CHANGE: removed the label above and the "Downloads: ..." line below; reduced padding to give space back -->
+                    <div class="text-center pt-0">
+                        <button
+                            @click="downloadZip()"
+                            class="w-full bg-slate-800 hover:bg-slate-700 text-white font-medium py-4 px-4 rounded-lg shadow-sm transition flex items-center justify-center gap-2 group">
+                            <svg class="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            Download CSV files (.zip)
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
+    <footer class="bg-white border-t border-slate-200 py-8 mt-auto">
+        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+            <div>&copy; 2026 FSU NLP Lab.</div>
+            <div>Last updated: <span class="font-mono text-slate-700">2026-01-10</span></div>
+        </div>
+    </footer>
+
     <script>
         function app() {
             return {
-                view: 'chart', // 'chart' or 'table'
+                view: 'chart',
+                filterMode: 'all',
                 loading: false,
-                linkCopied: false,
                 chartInstance: null,
+                inventory: [],
+                data: [], 
+                meta: {}, 
                 
-                // Available options (populated from index.json)
-                options: { languages: [], registers: [], models: [] },
+                // Static Insights
+                globalInsights: [],
                 
-                // Current selection
-                selection: { lang: 'en', register: 'news', model: 'gpt-4' },
-                
-                // Data holder
-                data: [],
+                insightIndex: 0,
 
+                // Toast state
+                toast: {
+                    show: false,
+                    title: '',
+                    message: '',
+                    hint: '',
+                    _timer: null
+                },
+                
+                // Defaults (Will be validated on load)
+                selection: { model: 'gpt-4', register: 'news', lang: 'en' },
+
+                // --- INSIGHTS LOGIC ---
+                get generatedInsights() {
+                    if (!this.data.length && this.globalInsights.length) return this.globalInsights;
+                    if (!this.data.length) return [];
+
+                    const cards = [];
+
+                    // 1. Dynamic Summary Card (Always First)
+                    const top = this.data[0];
+                    const verb = this.data.find(d => d.upos === 'VERB');
+                    const noun = this.data.find(d => d.upos === 'NOUN');
+                    const adj = this.data.find(d => d.upos === 'ADJ');
+
+                    cards.push({
+                        type: 'summary',
+                        title: 'Key Insight',
+                        main: top,
+                        leaders: [
+                            { pos: 'VERB', word: verb ? verb.word : '-' },
+                            { pos: 'NOUN', word: noun ? noun.word : '-' },
+                            { pos: 'ADJ',  word: adj ? adj.word : '-' }
+                        ]
+                    });
+
+                    // 2. Append Static Insights
+                    if (this.globalInsights.length) {
+                        cards.push(...this.globalInsights);
+                    } else {
+                        cards.push({ 
+                            type: 'about', 
+                            title: 'About the Score', 
+                            text: 'The Lexical Alignment Score calculates the log-odds ratio between model and human term frequencies.' 
+                        });
+                    }
+
+                    return cards;
+                },
+
+                // --- NAVIGATION LOGIC: "LATEST CLICK IS KING" ---
+                
+                // 1. Top Level: All unique models
+                get allModels() {
+                    if (!this.inventory.length) return [];
+                    return [...new Set(this.inventory.map(i => i.model))].sort();
+                },
+
+                // 2. Registers: Show ALL registers for this model (do not filter by lang)
+                get allRegistersForModel() {
+                    if (!this.inventory.length) return [];
+                    return [...new Set(this.inventory
+                        .filter(i => i.model === this.selection.model)
+                        .map(i => i.register)
+                    )].sort();
+                },
+
+                // 3. Languages: Show ALL languages for this model (do not filter by register)
+                get allLanguagesForModel() {
+                    if (!this.inventory.length) return [];
+                    return [...new Set(this.inventory
+                        .filter(i => i.model === this.selection.model)
+                        .map(i => i.lang)
+                    )].sort();
+                },
+
+                // --- LIMITED-COVERAGE HELPERS (for UX messaging) ---
+
+                get modelRegisterCount() {
+                    return this.allRegistersForModel.length;
+                },
+
+                get modelLanguageCount() {
+                    return this.allLanguagesForModel.length;
+                },
+
+                maybeToastLimited(which) {
+                    // Show guidance only when the clicked control is effectively "locked" by model coverage.
+                    if (!this.inventory.length) return;
+
+                    if (which === 'register' && this.modelRegisterCount <= 1) {
+                        const onlyReg = this.allRegistersForModel[0] ? this.capitalize(this.allRegistersForModel[0]) : '—';
+                        this.showToast({
+                            title: 'Limited domain options for this model',
+                            message: `${this.formatModel(this.selection.model)} currently has only ${onlyReg}.`,
+                            hint: 'To change domain, switch model.'
+                        });
+                    }
+
+                    if (which === 'lang' && this.modelLanguageCount <= 1) {
+                        const onlyLang = this.allLanguagesForModel[0] ? this.allLanguagesForModel[0].toUpperCase() : '—';
+                        this.showToast({
+                            title: 'Limited language options for this model',
+                            message: `${this.formatModel(this.selection.model)} currently has only ${onlyLang}.`,
+                            hint: 'To change language, switch model.'
+                        });
+                    }
+                },
+
+                showToast({ title, message, hint = '', ttl = 3800 }) {
+                    // Avoid stacking timers
+                    if (this.toast._timer) clearTimeout(this.toast._timer);
+
+                    this.toast.title = title;
+                    this.toast.message = message;
+                    this.toast.hint = hint;
+                    this.toast.show = true;
+
+                    this.toast._timer = setTimeout(() => {
+                        this.toast.show = false;
+                        this.toast._timer = null;
+                    }, ttl);
+                },
+
+                hideToast() {
+                    if (this.toast._timer) clearTimeout(this.toast._timer);
+                    this.toast._timer = null;
+                    this.toast.show = false;
+                },
+
+                // --- DOWNLOAD ZIP (same folder as index.html) ---
+                downloadZip() {
+                    const url = new URL('csv_files.zip', window.location.href);
+                    const a = document.createElement('a');
+                    a.href = url.toString();
+                    a.download = 'csv_files.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+
+                    this.showToast({
+                        title: 'Download started',
+                        message: 'Downloading csv_files.zip',
+                        hint: 'If nothing happens, ensure csv_files.zip is deployed next to index.html.'
+                    });
+                },
+
+                // --- ROBUST SELECTION VALIDATION (fixes bad defaults, stale state, and bfcache weirdness) ---
+                validateSelection() {
+                    // Needs inventory loaded
+                    const models = this.allModels;
+                    if (!models.length) return;
+
+                    // 1) Ensure model is valid
+                    if (!models.includes(this.selection.model)) {
+                        this.selection.model = models[0];
+                    }
+
+                    // 2) Ensure register is valid for model
+                    const regs = this.allRegistersForModel;
+                    if (!regs.length) return;
+
+                    if (!regs.includes(this.selection.register)) {
+                        this.selection.register = regs[0];
+                    }
+
+                    // 3) Ensure language is valid for model
+                    const langs = this.allLanguagesForModel;
+                    if (!langs.length) return;
+
+                    if (!langs.includes(this.selection.lang)) {
+                        this.selection.lang = langs[0];
+                    }
+
+                    // 4) Ensure triplet exists; if not, snap to first available entry for that model
+                    const ok = this.inventory.some(i =>
+                        i.model === this.selection.model &&
+                        i.register === this.selection.register &&
+                        i.lang === this.selection.lang
+                    );
+
+                    if (!ok) {
+                        const first = this.inventory.find(i => i.model === this.selection.model);
+                        if (first) {
+                            this.selection.register = first.register;
+                            this.selection.lang = first.lang;
+                        }
+                    }
+                },
+
+                // --- AVAILABILITY HELPERS ---
+                
+                // Returns { available: bool, switchTarget: string | null }
+                getRegisterAvailability(reg) {
+                    const valid = this.inventory.some(i => i.model === this.selection.model && i.register === reg && i.lang === this.selection.lang);
+                    if (valid) return { available: true, switchTarget: null };
+
+                    // Find a fallback language for this register
+                    const fallback = this.inventory.find(i => i.model === this.selection.model && i.register === reg);
+                    return { available: false, switchTarget: fallback ? fallback.lang : null };
+                },
+
+                getLangAvailability(lng) {
+                    const valid = this.inventory.some(i => i.model === this.selection.model && i.register === this.selection.register && i.lang === lng);
+                    if (valid) return { available: true, switchTarget: null };
+
+                    // Find a fallback register for this language
+                    const fallback = this.inventory.find(i => i.model === this.selection.model && i.lang === lng);
+                    return { available: false, switchTarget: fallback ? fallback.register : null };
+                },
+
+                // --- VISUAL LABEL FORMATTERS ---
+
+                getRegisterLabel(reg) {
+                    const status = this.getRegisterAvailability(reg);
+                    const label = this.capitalize(reg);
+                    if (status.available) return label;
+                    if (status.switchTarget) return `${label} \u27F6 switches to ${status.switchTarget.toUpperCase()}`;
+                    return label;
+                },
+
+                getLangLabel(lng) {
+                    const status = this.getLangAvailability(lng);
+                    const label = lng.toUpperCase();
+                    if (status.available) return label;
+                    if (status.switchTarget) return `${label} \u27F6 switches to ${this.capitalize(status.switchTarget)}`;
+                    return label;
+                },
+
+                // --- DISPLAY DATA ---
+                get displayData() {
+                    if (!this.data.length) return [];
+                    let result = this.data;
+                    const contentTags = ['NOUN', 'VERB', 'ADJ', 'ADV', 'PROPN']; 
+                    if (this.filterMode === 'content') result = result.filter(d => d.upos && contentTags.includes(d.upos));
+                    else if (this.filterMode === 'function') result = result.filter(d => d.upos && !contentTags.includes(d.upos));
+                    return result; 
+                },
+
+                // --- EVENTS ---
                 async initApp() {
-                    // 1. Load available options
-                    const indexRes = await fetch('data/index.json');
-                    this.options = await indexRes.json();
-                    
-                    // 2. Check URL params for deep linking
-                    const params = new URLSearchParams(window.location.search);
-                    if(params.has('lang')) this.selection.lang = params.get('lang');
-                    if(params.has('register')) this.selection.register = params.get('register');
-                    if(params.has('model')) this.selection.model = params.get('model');
+                    try {
+                        // Handle bfcache restore robustly (back/forward to/from about.html)
+                        if (!this._pageshowBound) {
+                            this._pageshowBound = true;
+                            window.addEventListener('pageshow', (e) => {
+                                if (e.persisted) {
+                                    // Re-init to ensure state is consistent
+                                    this.initApp();
+                                }
+                            });
+                        }
 
-                    // 3. Initial Fetch
-                    await this.fetchData();
+                        const res = await fetch('data/index.json');
+                        if (!res.ok) throw new Error(`Could not load data/index.json`);
+                        this.inventory = await res.json();
+                        
+                        try {
+                            const resInsights = await fetch('insights.json');
+                            if (resInsights.ok) this.globalInsights = await resInsights.json();
+                        } catch (e) { console.warn("Insights file optional."); }
+
+                        // Apply URL params only if valid; otherwise keep current selection (which we will validate anyway)
+                        const params = new URLSearchParams(window.location.search);
+
+                        // MODEL (validate against inventory)
+                        if (params.has('model')) {
+                            const m = params.get('model');
+                            if (this.allModels.includes(m)) this.selection.model = m;
+                        }
+
+                        // REGISTER and LANG: we can only validate these after model is set (and then validateSelection will fix triplet)
+                        if (params.has('register')) {
+                            const r = params.get('register');
+                            this.selection.register = r;
+                        }
+                        if (params.has('lang')) {
+                            const l = params.get('lang');
+                            this.selection.lang = l;
+                        }
+
+                        // Robust: fix bad defaults, bad params, or stale restored state
+                        this.validateSelection();
+
+                        // Fetch with the now-valid selection
+                        this.fetchData();
+
+                    } catch (err) {
+                        console.error(err);
+                        alert("Error: Cannot load data!");
+                    }
+                },
+
+                onModelChange() {
+                    // If the model has only 1 register or 1 language, proactively nudge.
+                    if (this.modelRegisterCount <= 1) {
+                        this.showToast({
+                            title: 'Model coverage is limited',
+                            message: `${this.formatModel(this.selection.model)} has ${this.modelRegisterCount} domain option.`,
+                            hint: 'Switch model for more domain choices.',
+                            ttl: 3200
+                        });
+                    } else if (this.modelLanguageCount <= 1) {
+                        this.showToast({
+                            title: 'Model coverage is limited',
+                            message: `${this.formatModel(this.selection.model)} has ${this.modelLanguageCount} language option.`,
+                            hint: 'Switch model for more language choices.',
+                            ttl: 3200
+                        });
+                    }
+
+                    // Snap selection to a valid triplet for this model, then fetch
+                    this.validateSelection();
+                    this.fetchData();
+                },
+
+                onRegisterChange() {
+                    // If register options are effectively locked for this model, nudge when they change.
+                    if (this.modelRegisterCount <= 1) {
+                        this.showToast({
+                            title: 'Only one domain for this model',
+                            message: `${this.formatModel(this.selection.model)} currently supports only ${this.capitalize(this.allRegistersForModel[0] || '')}.`,
+                            hint: 'Switch model for other domains.',
+                            ttl: 3200
+                        });
+                    }
+
+                    // Keep triplet valid; validateSelection will snap language if needed
+                    this.validateSelection();
+                    this.fetchData();
+                },
+
+                onLangChange() {
+                    // If language options are effectively locked for this model, nudge when they change.
+                    if (this.modelLanguageCount <= 1) {
+                        this.showToast({
+                            title: 'Only one language for this model',
+                            message: `${this.formatModel(this.selection.model)} currently supports only ${(this.allLanguagesForModel[0] || '').toUpperCase()}.`,
+                            hint: 'Switch model for other languages.',
+                            ttl: 3200
+                        });
+                    }
+
+                    // Keep triplet valid; validateSelection will snap register if needed
+                    this.validateSelection();
+                    this.fetchData();
+                },
+
+                setFilter(mode) {
+                    this.filterMode = mode;
+                    this.renderChart();
+                },
+
+                nextInsight() {
+                    this.insightIndex = (this.insightIndex + 1) % this.generatedInsights.length;
+                },
+                prevInsight() {
+                    this.insightIndex = (this.insightIndex - 1 + this.generatedInsights.length) % this.generatedInsights.length;
                 },
 
                 async fetchData() {
+                    if (!this.selection.model || !this.selection.lang || !this.selection.register) return; 
                     this.loading = true;
                     this.updateURL();
                     
-                    // Construct filename: data/en_news_gpt-4.json
                     const filename = `data/${this.selection.lang}_${this.selection.register}_${this.selection.model}.json`;
                     
                     try {
                         const res = await fetch(filename);
-                        if(!res.ok) throw new Error("Data not found");
+                        if(!res.ok) throw new Error(`Missing file: ${filename}`);
                         const json = await res.json();
-                        this.data = json.data.slice(0, 20); // Top 20 for viz
+                        
+                        this.data = (json.meta ? json.data : json.data || json).slice(0, 300); 
+                        this.meta = json.meta || {}; 
+                        
+                        this.insightIndex = 0; 
                         this.renderChart();
                     } catch (e) {
                         console.error(e);
-                        this.data = [];
                     } finally {
                         this.loading = false;
                     }
                 },
 
                 renderChart() {
-                    const ctx = document.getElementById('mainChart').getContext('2d');
-                    
+                    const canvas = document.getElementById('mainChart');
+                    if (!canvas) return;
+                    const ctx = canvas.getContext('2d');
                     if (this.chartInstance) this.chartInstance.destroy();
+                    
+                    const chartData = this.displayData.slice(0, 15);
+                    if (chartData.length === 0) return;
 
                     this.chartInstance = new Chart(ctx, {
                         type: 'bar',
                         data: {
-                            labels: this.data.map(d => d.word),
+                            labels: chartData.map(d => d.word),
                             datasets: [{
                                 label: 'Alignment Score',
-                                data: this.data.map(d => d.score),
-                                backgroundColor: '#2563eb',
+                                data: chartData.map(d => d.score),
+                                backgroundColor: '#1e3a8a',
                                 borderRadius: 4,
+                                barThickness: 'flex', maxBarThickness: 30
                             }]
                         },
                         options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
+                            responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                            animation: false, 
                             plugins: { legend: { display: false } },
                             scales: {
-                                y: { beginAtZero: true, grid: { display: false } },
-                                x: { grid: { display: false } }
+                                y: { grid: { display: false } },
+                                x: { grid: { color: '#f1f5f9' }, title: {display:true, text:'Overuse Score'} }
                             }
                         }
                     });
@@ -234,15 +758,15 @@
                     window.history.pushState({}, '', url);
                 },
 
-                copyLink() {
-                    navigator.clipboard.writeText(window.location.href);
-                    this.linkCopied = true;
-                    setTimeout(() => this.linkCopied = false, 2000);
+                formatK(num) {
+                    if (!num) return '-';
+                    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+                    if (num >= 1000) return (num / 1000).toFixed(0) + 'k';
+                    return num;
                 },
 
-                // Utilities
-                capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); },
-                formatModel(s) { return s.toUpperCase(); } // Customize model names here
+                capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; },
+                formatModel(s) { return s ? s.toUpperCase() : ''; }
             }
         }
     </script>
