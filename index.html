@@ -302,7 +302,7 @@
                             @click="downloadZip()"
                             class="w-full bg-slate-800 hover:bg-slate-700 text-white font-medium py-4 px-4 rounded-lg shadow-sm transition flex items-center justify-center gap-2 group">
                             <svg class="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Download CSV files (.zip)
+                            Download CSV files (.7z)
                         </button>
                     </div>
                 </div>
@@ -465,18 +465,18 @@
 
                 // --- DOWNLOAD ZIP (same folder as index.html) ---
                 downloadZip() {
-                    const url = new URL('csv_files.zip', window.location.href);
+                    const url = new URL('csv_files.7z', window.location.href);
                     const a = document.createElement('a');
                     a.href = url.toString();
-                    a.download = 'csv_files.zip';
+                    a.download = 'csv_files.7z';
                     document.body.appendChild(a);
                     a.click();
                     a.remove();
 
                     this.showToast({
                         title: 'Download started',
-                        message: 'Downloading csv_files.zip',
-                        hint: 'If nothing happens, ensure csv_files.zip is deployed next to index.html.'
+                        message: 'Downloading csv_files.7z',
+                        hint: 'If nothing happens, ensure csv_files.7z is deployed next to index.html.'
                     });
                 },
 
