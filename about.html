@@ -3,8 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About | LexA-Index</title>
+    <title>About LexA-Index | Methodology & Research Background</title>
     
+    <meta name="description" content="Learn about the methodology behind LexA-Index. Developed by FSU NLP Lab, this project uses Windowed Prevalence and Lexical Alignment Scores (LAS) to quantify AI-Human linguistic divergence.">
+    <meta name="keywords" content="Lexical Alignment Score, LAS, Windowed Prevalence, Jeffreys smoothing, NLP Research, FSU NLP, AI drift, Modelese, Computational Linguistics">
+    <meta name="author" content="FSU NLP Lab">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://fsu-nlp.github.io/lexa-index/about.html">
+
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="About LexA-Index | Methodology">
+    <meta property="og:description" content="Understanding the divergence between Human and AI lexical choices using Lexical Alignment Scores.">
+    <meta property="og:url" content="https://fsu-nlp.github.io/lexa-index/about.html">
+    <meta property="og:image" content="https://fsu-nlp.github.io/lexa-index/social-preview.png">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Methodology: Lexical Alignment Index",
+      "author": {
+        "@type": "Organization",
+        "name": "FSU NLP Lab"
+      },
+      "description": "Technical explanation of Windowed Prevalence and Lexical Alignment Scores used to measure AI-Human text divergence.",
+      "articleSection": "Methodology",
+      "keywords": "NLP, Large Language Models, Lexical Analysis"
+    }
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -27,16 +59,16 @@
 </head>
 <body class="bg-paper text-slate-800 flex flex-col min-h-screen">
 
-    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm" aria-label="Main Navigation">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <a href="index.html" class="text-xl font-bold tracking-tight text-slate-900">LexA-Index</a>
+                <a href="index.html" class="text-xl font-bold tracking-tight text-slate-900" aria-label="LexA-Index Home">LexA-Index</a>
                 <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] uppercase font-semibold bg-brand/10 text-brand rounded-full tracking-wide">Beta</span>
             </div>
             <div class="flex items-center space-x-6 text-sm font-medium text-slate-600">
                 <a href="index.html" class="hover:text-brand transition">Explorer</a>
-                <a href="#" class="text-brand font-semibold">About</a>
-                <a href="https://github.com/fsu-nlp/lexa-index" target="_blank" class="hover:text-slate-900 transition">GitHub</a>
+                <a href="#" class="text-brand font-semibold" aria-current="page">About</a>
+                <a href="https://github.com/fsu-nlp/lexa-index" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900 transition">GitHub</a>
             </div>
         </div>
     </nav>
@@ -65,7 +97,7 @@
                 <h2 class="text-xl font-bold text-slate-900 mb-4">Background & Motivation</h2>
                 <div class="bg-slate-50 p-6 rounded-lg border border-slate-100 text-slate-600 leading-relaxed academic-text">
                     <p>
-                        [cite_start]Recent research indicates that written language, especially in scientific and educational domains, is undergoing rapid lexical shifts widely attributed to the influence of Large Language Models (LLMs)[cite: 2]. [cite_start]This project investigates whether these divergences merely reflect the use of AI tools or signal a deeper change in the human language system itself, where speakers increasingly adopt 'modelese' patterns even in unscripted interactions[cite: 4, 34]. [cite_start]By quantifying this alignment, we aim to better understand the potential for machine-generated text to reshape human communication norms and the broader implications of such 'misalignment'[cite: 3, 33].
+                        Recent research indicates that written language, especially in scientific and educational domains, is undergoing rapid lexical shifts widely attributed to the influence of Large Language Models (LLMs). This project investigates whether these divergences merely reflect the use of AI tools or signal a deeper change in the human language system itself, where speakers increasingly adopt 'modelese' patterns even in unscripted interactions. By quantifying this alignment, we aim to better understand the potential for machine-generated text to reshape human communication norms and the broader implications of such 'misalignment'.
                     </p>
                 </div>
             </section>
@@ -74,7 +106,9 @@
                 <h2 class="text-xl font-bold text-slate-900 mb-4">Understanding Windowed Prevalence</h2>
                 <p class="text-slate-600 mb-4">A visual explanation of the approach used to analyze the texts.</p>
                 
-                <div class="relative w-full aspect-video bg-slate-900 rounded-lg overflow-hidden shadow-lg group">
+                
+
+                <div class="relative w-full aspect-video bg-slate-900 rounded-lg overflow-hidden shadow-lg group mt-4">
                     <iframe class="absolute inset-0 w-full h-full" 
                             src="https://www.youtube.com/embed/xvFZjo5PgG0"
                             title="YouTube video player" 
@@ -91,8 +125,11 @@
                     <p class="mb-4">
                         We utilize the <strong>Lexical Alignment Score (LAS)</strong> to quantify the drift between Human and AI vocabulary. Technically, LAS calculates the <strong>difference in windowed prevalence</strong>: the likelihood that a specific word appears within a fixed window (e.g., 50 tokens) in AI-generated text versus the human baseline.
                     </p>
+                    
+                    
+
                     <p>
-                        To ensure robustness, we apply <strong>Jeffreys smoothing</strong> to stabilize estimates for rare words[cite: 95]. Individual word scores are then aggregated using a <strong>length-normalized root-mean-square (RMS)</strong> metric. This approach prevents single repetitive documents from skewing the data and effectively highlights terms that are systematically "widespread" across the model's entire output[cite: 113].
+                        To ensure robustness, we apply <strong>Jeffreys smoothing</strong> to stabilize estimates for rare words. Individual word scores are then aggregated using a <strong>length-normalized root-mean-square (RMS)</strong> metric. This approach prevents single repetitive documents from skewing the data and effectively highlights terms that are systematically "widespread" across the model's entire output.
                     </p>
                 </div>
             </section>
@@ -108,11 +145,11 @@
     </main>
 
     <footer class="bg-white border-t border-slate-200 py-8 mt-auto">
-	    <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
-		<div>&copy; 2026 FSU NLP Lab.</div>
-		<div>Last updated: <span class="font-mono text-slate-700">2026-01-10</span></div>
-	    </div>
-	</footer>
+        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+            <div>&copy; 2026 FSU NLP Lab.</div>
+            <div>Last updated: <span class="font-mono text-slate-700">2026-01-10</span></div>
+        </div>
+    </footer>
 
 </body>
 </html>

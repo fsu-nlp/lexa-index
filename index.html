@@ -3,22 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Open Graph / Facebook / LinkedIn -->
+    <title>LexA-Index | AI vs. Human Lexical Alignment Analysis</title>
+    
+    <meta name="description" content="Analyze lexical alignment in Large Language Models. Compare AI-generated text vs human baselines, discover 'ghost words', and visualize linguistic divergence across languages and architectures.">
+    <meta name="keywords" content="LLM, Lexical Alignment, AI detection, NLP, Computational Linguistics, AI word usage, Ghost Words, FSU NLP, Large Language Models">
+    <meta name="author" content="FSU NLP Lab">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://fsu-nlp.github.io/lexa-index/">
+
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="LexA-Index">
     <meta property="og:title" content="LexA-Index | Lexical Alignment for LLMs">
     <meta property="og:description" content="Explore words significantly overused by AI vs human baselines across languages, registers, and architectures.">
     <meta property="og:url" content="https://fsu-nlp.github.io/lexa-index/">
     <meta property="og:image" content="https://fsu-nlp.github.io/lexa-index/social-preview.png">
+    <meta property="og:image:alt" content="LexA-Index Dashboard Preview">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
-    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="LexA-Index | Lexical Alignment for LLMs">
-    <meta name="twitter:description" content="Explore words significantly overused by AI vs human baselines across languages, registers, and architectures.">
+    <meta name="twitter:description" content="Explore words significantly overused by AI vs human baselines. A visual tool for NLP researchers.">
     <meta name="twitter:image" content="https://fsu-nlp.github.io/lexa-index/social-preview.png">
-    <title>LexA-Index | Lexical Alignment for LLMs</title>
     
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "LexA-Index",
+      "url": "https://fsu-nlp.github.io/lexa-index/",
+      "description": "A tool for identifying words significantly overused by AI compared to human baselines across languages, registers, and architectures.",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Web Browser",
+      "author": {
+        "@type": "Organization",
+        "name": "FSU NLP Lab",
+        "url": "https://github.com/fsu-nlp"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -48,7 +84,6 @@
 </head>
 <body class="bg-paper text-slate-800 flex flex-col min-h-screen" x-data="app()" x-init="initApp()">
 
-    <!-- TOP-RIGHT TOAST -->
     <div class="fixed top-4 right-4 z-[9999] max-w-sm w-[min(92vw,24rem)]" x-cloak>
         <div
             x-show="toast.show"
@@ -64,7 +99,7 @@
         >
             <div class="flex items-start gap-3">
                 <div class="mt-0.5">
-                    <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"/>
                     </svg>
@@ -77,9 +112,9 @@
                 <button
                     class="p-1 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-50 transition"
                     @click="hideToast()"
-                    aria-label="Dismiss"
+                    aria-label="Dismiss notification"
                 >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M6 18L18 6M6 6l12 12"/>
                     </svg>
@@ -88,16 +123,16 @@
         </div>
     </div>
 
-    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm" aria-label="Main Navigation">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <a href="#" class="text-xl font-bold tracking-tight text-slate-900">LexA-Index</a>
+                <a href="#" class="text-xl font-bold tracking-tight text-slate-900" aria-label="LexA-Index Home">LexA-Index</a>
                 <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] uppercase font-semibold bg-brand/10 text-brand rounded-full tracking-wide">Beta</span>
             </div>
             <div class="flex items-center space-x-6 text-sm font-medium text-slate-600">
-                <a href="#" class="hover:text-brand transition">Explorer</a>
+                <a href="#" class="hover:text-brand transition" aria-current="page">Explorer</a>
                 <a href="about.html" class="hover:text-brand transition">About</a>
-                <a href="https://github.com/fsu-nlp/lexa-index" target="_blank" class="hover:text-slate-900 transition">GitHub</a>
+                <a href="https://github.com/fsu-nlp/lexa-index" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900 transition">GitHub</a>
             </div>
         </div>
     </nav>
@@ -119,21 +154,23 @@
                     Show me the words that
                     
                     <div class="relative inline-block mx-1 group">
-                        <select x-model="selection.model" @change="onModelChange"
+                        <label for="model-select" class="sr-only">Select AI Model</label>
+                        <select id="model-select" x-model="selection.model" @change="onModelChange"
                                 class="appearance-none font-bold text-brand bg-transparent border-b-2 border-brand/20 py-1 pr-6 pl-1 focus:outline-none focus:border-brand cursor-pointer hover:bg-white transition rounded-t">
                             <template x-for="m in allModels" :key="m">
                                 <option :value="m" x-text="formatModel(m)"></option>
                             </template>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center text-brand">
-                            <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                            <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
                         </div>
                     </div>
 
                     overuses in
 
                     <div class="relative inline-block mx-1">
-                        <select x-model="selection.register"
+                        <label for="register-select" class="sr-only">Select Register</label>
+                        <select id="register-select" x-model="selection.register"
                                 @click="maybeToastLimited('register')"
                                 @focus="maybeToastLimited('register')"
                                 @change="onRegisterChange"
@@ -146,14 +183,15 @@
                             </template>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center text-brand">
-                            <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 0 010-1.414z"/></svg>
+                            <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 0 010-1.414z"/></svg>
                         </div>
                     </div>
 
                     texts in
 
                     <div class="relative inline-block mx-1">
-                        <select x-model="selection.lang"
+                        <label for="lang-select" class="sr-only">Select Language</label>
+                        <select id="lang-select" x-model="selection.lang"
                                 @click="maybeToastLimited('lang')"
                                 @focus="maybeToastLimited('lang')"
                                 @change="onLangChange"
@@ -166,7 +204,7 @@
                             </template>
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center text-brand">
-                            <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 0 010-1.414z"/></svg>
+                            <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 0 010-1.414z"/></svg>
                         </div>
                     </div>
                     .
@@ -188,40 +226,40 @@
                         </div>
 
                         <div class="flex flex-wrap gap-3">
-                            <div class="flex bg-slate-100 p-1 rounded-lg">
+                            <div class="flex bg-slate-100 p-1 rounded-lg" role="group" aria-label="Word Filter">
                                 <button @click="setFilter('all')" :class="filterMode === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-3 py-1 rounded-md text-xs font-medium transition">All</button>
                                 <button @click="setFilter('content')" :class="filterMode === 'content' ? 'bg-white text-brand shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-3 py-1 rounded-md text-xs font-medium transition">Content</button>
                                 <button @click="setFilter('function')" :class="filterMode === 'function' ? 'bg-white text-purple-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-3 py-1 rounded-md text-xs font-medium transition">Func</button>
                             </div>
 
-                            <div class="flex bg-slate-100 p-1 rounded-lg">
-                                <button @click="view = 'chart'" :class="view === 'chart' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-3 py-1 rounded-md text-xs font-medium transition">Chart</button>
-                                <button @click="view = 'table'" :class="view === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-3 py-1 rounded-md text-xs font-medium transition">Table</button>
+                            <div class="flex bg-slate-100 p-1 rounded-lg" role="group" aria-label="View Toggle">
+                                <button @click="view = 'chart'" :class="view === 'chart' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-3 py-1 rounded-md text-xs font-medium transition" aria-label="Show Chart View">Chart</button>
+                                <button @click="view = 'table'" :class="view === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-3 py-1 rounded-md text-xs font-medium transition" aria-label="Show Table View">Table</button>
                             </div>
                         </div>
                     </div>
                     
                     <div x-show="loading" class="absolute inset-0 bg-white/90 z-20 flex items-center justify-center backdrop-blur-[1px]">
                         <div class="flex flex-col items-center gap-3">
-                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand"></div>
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-brand" role="status"></div>
                             <span class="text-sm font-medium text-slate-500">Processing Lexical Data...</span>
                         </div>
                     </div>
 
                     <div class="flex-grow relative min-h-[400px]">
                         <div x-show="view === 'chart'" class="h-full w-full absolute inset-0">
-                            <canvas id="mainChart"></canvas>
+                            <canvas id="mainChart" aria-label="Bar chart showing the most divergent words"></canvas>
                         </div>
                         
                         <div x-show="view === 'table'" x-cloak class="h-full w-full absolute inset-0 overflow-y-auto">
                             <table class="w-full text-sm text-left">
                                 <thead class="text-xs text-slate-500 uppercase bg-slate-50 sticky top-0 border-b border-slate-200 z-10">
                                     <tr>
-                                        <th class="px-4 py-3 bg-slate-50">Rank</th>
-                                        <th class="px-4 py-3 bg-slate-50">Word</th>
-                                        <th class="px-4 py-3 bg-slate-50">POS</th>
-                                        <th class="px-4 py-3 text-right bg-slate-50">Score</th>
-                                        <th class="px-4 py-3 text-right bg-slate-50">OPM</th>
+                                        <th scope="col" class="px-4 py-3 bg-slate-50">Rank</th>
+                                        <th scope="col" class="px-4 py-3 bg-slate-50">Word</th>
+                                        <th scope="col" class="px-4 py-3 bg-slate-50">POS</th>
+                                        <th scope="col" class="px-4 py-3 text-right bg-slate-50">Score</th>
+                                        <th scope="col" class="px-4 py-3 text-right bg-slate-50">OPM</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
@@ -249,18 +287,17 @@
 
                 <div class="lg:col-span-4 bg-slate-50/50 p-6 flex flex-col gap-6">
                     
-                    <!-- CHANGE: give more vertical space to the carousel by tightening the bottom area -->
                     <div class="bg-white p-6 rounded-lg border border-slate-200 shadow-sm flex flex-col flex-grow min-h-[360px] relative overflow-hidden" x-show="generatedInsights.length > 0">
                         
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest" x-text="generatedInsights[insightIndex]?.title"></h3>
                             
                             <div class="flex gap-1" x-show="generatedInsights.length > 1">
-                                <button @click="prevInsight" class="p-1.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-700 transition">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                                <button @click="prevInsight" aria-label="Previous Insight" class="p-1.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-700 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                                 </button>
-                                <button @click="nextInsight" class="p-1.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-700 transition">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                <button @click="nextInsight" aria-label="Next Insight" class="p-1.5 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-700 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                                 </button>
                             </div>
                         </div>
@@ -305,17 +342,16 @@
 
                         <div class="flex justify-center gap-2 mt-6" x-show="generatedInsights.length > 1">
                             <template x-for="(insight, idx) in generatedInsights" :key="idx">
-                                <button @click="insightIndex = idx" class="w-2 h-2 rounded-full transition-colors duration-300" :class="idx === insightIndex ? 'bg-brand' : 'bg-slate-200 hover:bg-slate-300'"></button>
+                                <button @click="insightIndex = idx" :aria-label="'Go to insight ' + (idx + 1)" class="w-2 h-2 rounded-full transition-colors duration-300" :class="idx === insightIndex ? 'bg-brand' : 'bg-slate-200 hover:bg-slate-300'"></button>
                             </template>
                         </div>
                     </div>
                     
-                    <!-- CHANGE: removed the label above and the "Downloads: ..." line below; reduced padding to give space back -->
                     <div class="text-center pt-0">
                         <button
                             @click="downloadZip()"
                             class="w-full bg-slate-800 hover:bg-slate-700 text-white font-medium py-4 px-4 rounded-lg shadow-sm transition flex items-center justify-center gap-2 group">
-                            <svg class="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            <svg class="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                             Download CSV files (.7z)
                         </button>
                     </div>
