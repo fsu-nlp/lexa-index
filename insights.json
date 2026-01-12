@@ -1,0 +1,32 @@
+[
+  {
+    "type": "tip",
+    "title": "Beta Data Coverage",
+    "text": "This index is currently in Beta with limited coverage. The 'Science' register is restricted to English and select models, while 'News' features GPT-4.1-mini data."
+  },
+  {
+    "type": "about",
+    "title": "Methodology",
+    "text": "The Lexical Alignment Score is derived from windowed prevalence analysis. It offers a fully automated metric for divergence, eliminating the need for manual curation. Details in the <a href='#about' class='underline'>About section</a>."
+  },
+  {
+    "type": "finding",
+    "title": "The Syntactic Fingerprint",
+    "text": "A high proportion of overused terms are <strong>Function Words</strong> (e.g., connectors), suggesting that AI detection relies heavily on syntax rather than just topic. See <a href='https://arxiv.org/abs/2506.01407' class='underline' target='_blank'>related research</a>."
+  },
+  {
+    "type": "finding",
+    "title": "Model Idiolects",
+    "text": "Divergence patterns vary significantly across architectures (e.g., GPT vs. Claude), confirming that different models possess distinct <strong>idiolects</strong>. Read the analysis in <a href='https://www.scientificamerican.com/article/chatgpt-and-gemini-ai-have-uniquely-different-writing-styles/' class='underline' target='_blank'>Scientific American</a>."
+  },
+  {
+    "type": "tip",
+    "title": "Deep Dive",
+    "text": "Toggle the <strong>Table View</strong> to inspect the specific Part-of-Speech (POS) tags for every divergent word found in the dataset. OPM is occurrences per million (tokens)."
+  },
+  {
+    "type": "finding",
+    "title": "The RLHF Effect",
+    "text": "Why these words? Evidence suggests human raters during training (RLHF) often prefer this specific 'style', reinforcing the overuse of buzzwords. Listen on <a href='https://www.sciencefriday.com/segments/chatgpt-ai-word-choice/' class='underline' target='_blank'>Science Friday</a>."
+  }
+]

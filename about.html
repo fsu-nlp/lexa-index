@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | LexA-Index</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { 
+                extend: { 
+                    colors: { brand: '#1e3a8a', brandLight: '#3b82f6', paper: '#f8fafc' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Merriweather', 'serif'] }
+                } 
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Merriweather:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style>
+        [x-cloak] { display: none !important; }
+        body { font-family: 'Inter', sans-serif; }
+        .academic-text { font-family: 'Merriweather', serif; }
+    </style>
+</head>
+<body class="bg-paper text-slate-800 flex flex-col min-h-screen">
+
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <a href="index.html" class="text-xl font-bold tracking-tight text-slate-900">LexA-Index</a>
+                <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] uppercase font-semibold bg-brand/10 text-brand rounded-full tracking-wide">Beta</span>
+            </div>
+            <div class="flex items-center space-x-6 text-sm font-medium text-slate-600">
+                <a href="index.html" class="hover:text-brand transition">Explorer</a>
+                <a href="#" class="text-brand font-semibold">About</a>
+                <a href="https://github.com/fsu-nlp/lexa-index" target="_blank" class="hover:text-slate-900 transition">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="bg-gradient-to-b from-slate-900 to-slate-800 text-white pt-16 pb-12 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">About the Project</h1>
+            <div class="prose prose-lg prose-invert mx-auto opacity-90 academic-text leading-relaxed max-w-2xl">
+                <p>Understanding the divergence between Human and AI lexical choices.</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full max-w-4xl mx-auto px-4 -mt-8 z-10 mb-12">
+        <div class="bg-white rounded-xl shadow-xl border border-slate-200 overflow-hidden p-8 md:p-12">
+            
+            <section class="mb-12 border-b border-slate-100 pb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-4">Research Origin</h2>
+                <p class="text-slate-600 leading-relaxed text-lg">
+                    This project is the implementation of research conducted at the <strong>FSU NLP Lab</strong>. 
+                    The methodology and underlying framework were developed by <strong>Tommie</strong> and <strong>Zina</strong>, focusing on quantifying how Large Language Models (LLMs) drift from human baselines in specific registers.
+                </p>
+            </section>
+
+            <section class="mb-12">
+                <h2 class="text-xl font-bold text-slate-900 mb-4">Background & Motivation</h2>
+                <div class="bg-slate-50 p-6 rounded-lg border border-slate-100 text-slate-600 leading-relaxed academic-text">
+                    <p>
+                        [cite_start]Recent research indicates that written language, especially in scientific and educational domains, is undergoing rapid lexical shifts widely attributed to the influence of Large Language Models (LLMs)[cite: 2]. [cite_start]This project investigates whether these divergences merely reflect the use of AI tools or signal a deeper change in the human language system itself, where speakers increasingly adopt 'modelese' patterns even in unscripted interactions[cite: 4, 34]. [cite_start]By quantifying this alignment, we aim to better understand the potential for machine-generated text to reshape human communication norms and the broader implications of such 'misalignment'[cite: 3, 33].
+                    </p>
+                </div>
+            </section>
+
+            <section class="mb-12">
+                <h2 class="text-xl font-bold text-slate-900 mb-4">Understanding Windowed Prevalence</h2>
+                <p class="text-slate-600 mb-4">A visual explanation of the approach used to analyze the texts.</p>
+                
+                <div class="relative w-full aspect-video bg-slate-900 rounded-lg overflow-hidden shadow-lg group">
+                    <iframe class="absolute inset-0 w-full h-full" 
+                            src="https://www.youtube.com/embed/xvFZjo5PgG0"
+                            title="YouTube video player" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            allowfullscreen>
+                    </iframe>
+                </div>
+            </section>
+
+            <section class="mb-8">
+                <h2 class="text-xl font-bold text-slate-900 mb-4">The Divergence Score</h2>
+                <div class="prose prose-slate text-slate-600 leading-relaxed">
+                    <p class="mb-4">
+                        We utilize the <strong>Lexical Alignment Score (LAS)</strong> to quantify the drift between Human and AI vocabulary. Technically, LAS calculates the <strong>difference in windowed prevalence</strong>: the likelihood that a specific word appears within a fixed window (e.g., 50 tokens) in AI-generated text versus the human baseline.
+                    </p>
+                    <p>
+                        To ensure robustness, we apply <strong>Jeffreys smoothing</strong> to stabilize estimates for rare words[cite: 95]. Individual word scores are then aggregated using a <strong>length-normalized root-mean-square (RMS)</strong> metric. This approach prevents single repetitive documents from skewing the data and effectively highlights terms that are systematically "widespread" across the model's entire output[cite: 113].
+                    </p>
+                </div>
+            </section>
+
+            <div class="mt-12 pt-8 border-t border-slate-100 text-center">
+                <a href="index.html" class="inline-flex items-center gap-2 text-brand font-semibold hover:text-brandLight transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Return to Data Explorer
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-8 mt-auto">
+	    <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+		<div>&copy; 2026 FSU NLP Lab.</div>
+		<div>Last updated: <span class="font-mono text-slate-700">2026-01-10</span></div>
+	    </div>
+	</footer>
+
+</body>
+</html>
