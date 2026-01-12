@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LexA-Index | AI vs. Human Lexical Alignment Analysis</title>
+    <title>LexA-Index | AI vs. Human Lexical Overuse Explorer</title>
     
-    <meta name="description" content="Analyze lexical alignment in Large Language Models. Compare AI-generated text vs human baselines, discover 'ghost words', and visualize linguistic divergence across languages and architectures.">
-    <meta name="keywords" content="LLM, Lexical Alignment, AI detection, NLP, Computational Linguistics, AI word usage, Ghost Words, FSU NLP, Large Language Models">
+    <meta name="description" content="Explore which words AI uses too much. Compare AI writing vs. human writing to find 'ghost words' and AI buzzwords.">
+    <meta name="keywords" content="LLM, Lexical Alignment, AI detection, AI misalignment, NLP, Computational Linguistics, AI word usage, Ghost Words, AI buzzwords, AI fluff, AI slop, FSU NLP, Large Language Models">
     <meta name="author" content="FSU NLP Lab">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://fsu-nlp.github.io/lexa-index/">
@@ -18,8 +18,8 @@
 
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="LexA-Index">
-    <meta property="og:title" content="LexA-Index | Lexical Alignment for LLMs">
-    <meta property="og:description" content="Explore words significantly overused by AI vs human baselines across languages, registers, and architectures.">
+    <meta property="og:title" content="AI Language Explorer | Lexical Alignment for LLMs">
+    <meta property="og:description" content="Explore words overused by AI vs human baselines across languages, registers, and architectures.">
     <meta property="og:url" content="https://fsu-nlp.github.io/lexa-index/">
     <meta property="og:image" content="https://fsu-nlp.github.io/lexa-index/social-preview.png">
     <meta property="og:image:alt" content="LexA-Index Dashboard Preview">
@@ -27,8 +27,8 @@
     <meta property="og:image:height" content="630">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="LexA-Index | Lexical Alignment for LLMs">
-    <meta name="twitter:description" content="Explore words significantly overused by AI vs human baselines. A visual tool for NLP researchers.">
+    <meta name="twitter:title" content="AI Language Explorer | Lexical Alignment for LLMs">
+    <meta name="twitter:description" content="Explore words overused by AI vs human baselines. A visual tool for NLP researchers.">
     <meta name="twitter:image" content="https://fsu-nlp.github.io/lexa-index/social-preview.png">
     
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -39,7 +39,7 @@
       "@type": "WebApplication",
       "name": "LexA-Index",
       "url": "https://fsu-nlp.github.io/lexa-index/",
-      "description": "A tool for identifying words significantly overused by AI compared to human baselines across languages, registers, and architectures.",
+      "description": "A tool for exploring words overused by AI compared to human baselines across languages, registers, and architectures.",
       "applicationCategory": "EducationalApplication",
       "operatingSystem": "Web Browser",
       "author": {
@@ -139,9 +139,9 @@
 
     <header class="bg-gradient-to-b from-slate-900 to-slate-800 text-white pt-16 pb-12 px-4">
         <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Lexical Alignment Index</h1>
+            <h1 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">AI Word Overuse Explorer</h1>
             <div class="prose prose-lg prose-invert mx-auto opacity-90 academic-text leading-relaxed max-w-2xl">
-                <p>Identifying words significantly overused by AI compared to human baselines across languages, registers, and architectures.</p>
+                <p>Identifying words overused by AI compared to human baselines across languages, registers, and architectures.</p>
             </div>
         </div>
     </header>
@@ -311,7 +311,7 @@
                                             <span class="text-4xl font-bold text-slate-900 tracking-tight" x-text="'“' + generatedInsights[insightIndex].main.word + '”'"></span>
                                         </div>
                                         <p class="text-sm text-slate-500">
-                                            is the most divergent word overall.
+                                            is the #1 most overused word overall.
                                         </p>
                                     </div>
 
@@ -425,8 +425,8 @@
                     } else {
                         cards.push({ 
                             type: 'about', 
-                            title: 'About the Score', 
-                            text: 'The Lexical Alignment Score calculates the log-odds ratio between model and human term frequencies.' 
+                            title: 'Methodology', 
+                            text: 'The Lexical Alignment Score is derived from windowed prevalence analysis. It offers a fully automated metric for divergence, eliminating the need for manual curation.' 
                         });
                     }
 

@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About LexA-Index | Methodology & Research Background</title>
+    <title>About | How the AI Word Overuse Explorer Works</title>
     
-    <meta name="description" content="Learn about the methodology behind LexA-Index. Developed by FSU NLP Lab, this project uses Windowed Prevalence and Lexical Alignment Scores (LAS) to quantify AI-Human linguistic divergence.">
-    <meta name="keywords" content="Lexical Alignment Score, LAS, Windowed Prevalence, Jeffreys smoothing, NLP Research, FSU NLP, AI drift, Modelese, Computational Linguistics">
+    <meta name="description" content="Learn how we calculate AI word overuse. Developed by FSU NLP Lab, this project uses Windowed Prevalence and Lexical Alignment Scores (LAS) to quantify the 'AI accent'.">
+    <meta name="keywords" content="Lexical Alignment Score, LAS, Windowed Prevalence, Jeffreys smoothing, NLP Research, FSU NLP, AI drift, Modelese, Computational Linguistics, AI Word Usage">
     <meta name="author" content="FSU NLP Lab">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://fsu-nlp.github.io/lexa-index/about.html">
@@ -18,7 +18,7 @@
 
     <meta property="og:type" content="article">
     <meta property="og:title" content="About LexA-Index | Methodology">
-    <meta property="og:description" content="Understanding the divergence between Human and AI lexical choices using Lexical Alignment Scores.">
+    <meta property="og:description" content="Understanding the divergence between Human and AI vocabulary using Lexical Alignment Scores.">
     <meta property="og:url" content="https://fsu-nlp.github.io/lexa-index/about.html">
     <meta property="og:image" content="https://fsu-nlp.github.io/lexa-index/social-preview.png">
     
@@ -26,7 +26,7 @@
     {
       "@context": "https://schema.org",
       "@type": "TechArticle",
-      "headline": "Methodology: Lexical Alignment Index",
+      "headline": "Methodology: AI Word Overuse Explorer",
       "author": {
         "@type": "Organization",
         "name": "FSU NLP Lab"
@@ -75,9 +75,9 @@
 
     <header class="bg-gradient-to-b from-slate-900 to-slate-800 text-white pt-16 pb-12 px-4">
         <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">About the Project</h1>
+            <h1 class="text-4xl md:text-5xl font-bold mb-6 tracking-tight">About the Explorer</h1>
             <div class="prose prose-lg prose-invert mx-auto opacity-90 academic-text leading-relaxed max-w-2xl">
-                <p>Understanding the divergence between Human and AI lexical choices.</p>
+                <p>Uncovering the hidden patterns in AI writing and how they differ from human speech.</p>
             </div>
         </div>
     </header>
@@ -89,7 +89,7 @@
                 <h2 class="text-2xl font-bold text-slate-900 mb-4">Research Origin</h2>
                 <p class="text-slate-600 leading-relaxed text-lg">
                     This project is the implementation of research conducted at the <strong>FSU NLP Lab</strong>. 
-                    The methodology and underlying framework were developed by <strong>Tommie</strong> and <strong>Zina</strong>, focusing on quantifying how Large Language Models (LLMs) drift from human baselines in specific registers.
+                    The methodology and underlying framework were developed by <strong>Tommie</strong> and <strong>Zina</strong>, focusing on quantifying how Large Language Models (LLMs) drift from human baselines across different writing styles and genres.
                 </p>
             </section>
 
@@ -97,20 +97,20 @@
                 <h2 class="text-xl font-bold text-slate-900 mb-4">Background & Motivation</h2>
                 <div class="bg-slate-50 p-6 rounded-lg border border-slate-100 text-slate-600 leading-relaxed academic-text">
                     <p>
-                        Recent research indicates that written language, especially in scientific and educational domains, is undergoing rapid lexical shifts widely attributed to the influence of Large Language Models (LLMs). This project investigates whether these divergences merely reflect the use of AI tools or signal a deeper change in the human language system itself, where speakers increasingly adopt 'modelese' patterns even in unscripted interactions. By quantifying this alignment, we aim to better understand the potential for machine-generated text to reshape human communication norms and the broader implications of such 'misalignment'.
+                        Recent research indicates that written language, especially in scientific and educational settings, is undergoing rapid vocabulary changes attributed to the influence of AI tools. This project investigates whether these differences merely reflect the use of AI, or if they signal a deeper change in the human language system itself—where speakers increasingly adopt "modelese" (AI accents) even in unscripted interactions. By quantifying this alignment, we aim to better understand the potential for machine-generated text to reshape human communication.
                     </p>
                 </div>
             </section>
 
             <section class="mb-12">
-                <h2 class="text-xl font-bold text-slate-900 mb-4">Understanding Windowed Prevalence</h2>
-                <p class="text-slate-600 mb-4">A visual explanation of the approach used to analyze the texts.</p>
+                <h2 class="text-xl font-bold text-slate-900 mb-4">Visualizing the Method</h2>
+                <p class="text-slate-600 mb-4">How we track word frequency (Windowed Prevalence) across documents (the following video is a placeholder):</p>
                 
                 
 
                 <div class="relative w-full aspect-video bg-slate-900 rounded-lg overflow-hidden shadow-lg group mt-4">
                     <iframe class="absolute inset-0 w-full h-full" 
-                            src="https://www.youtube.com/embed/xvFZjo5PgG0"
+                            src="https://www.youtube.com/embed/3npuPXvA_g8"
                             title="YouTube video player" 
                             frameborder="0" 
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
@@ -120,16 +120,16 @@
             </section>
 
             <section class="mb-8">
-                <h2 class="text-xl font-bold text-slate-900 mb-4">The Divergence Score</h2>
+                <h2 class="text-xl font-bold text-slate-900 mb-4">The Scoring System (LAS)</h2>
                 <div class="prose prose-slate text-slate-600 leading-relaxed">
                     <p class="mb-4">
-                        We utilize the <strong>Lexical Alignment Score (LAS)</strong> to quantify the drift between Human and AI vocabulary. Technically, LAS calculates the <strong>difference in windowed prevalence</strong>: the likelihood that a specific word appears within a fixed window (e.g., 50 tokens) in AI-generated text versus the human baseline.
+                        We use the <strong>Lexical Alignment Score (LAS)</strong> to put a number on the "AI accent." In simple terms, this score measures the gap between how often an AI uses a word versus how often a human uses it. Technically, this is the <strong>difference in windowed prevalence</strong>: the probability that a specific word appears within a fixed window (e.g., 50 words) in AI text vs. human text.
                     </p>
                     
                     
 
                     <p>
-                        To ensure robustness, we apply <strong>Jeffreys smoothing</strong> to stabilize estimates for rare words. Individual word scores are then aggregated using a <strong>length-normalized root-mean-square (RMS)</strong> metric. This approach prevents single repetitive documents from skewing the data and effectively highlights terms that are systematically "widespread" across the model's entire output.
+                        To ensure mathematical robustness for experts, we apply <strong>Jeffreys smoothing</strong> to stabilize estimates for rare words. Individual word scores are then aggregated using a <strong>length-normalized root-mean-square (RMS)</strong> metric. This approach prevents single repetitive documents from skewing the data, highlighting words that are systematically "overused" across the model's entire output.
                     </p>
                 </div>
             </section>
@@ -137,7 +137,7 @@
             <div class="mt-12 pt-8 border-t border-slate-100 text-center">
                 <a href="index.html" class="inline-flex items-center gap-2 text-brand font-semibold hover:text-brandLight transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    Return to Data Explorer
+                    Return to Explorer
                 </a>
             </div>
 
