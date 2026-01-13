@@ -5,7 +5,7 @@ import re
 
 # --- CONFIGURATION ---
 INPUT_ROOT = "csv_files"  # The root of your experiment outputs
-OUTPUT_DIR = "data"      # Where the website reads from
+OUTPUT_DIR = "data"       # Where the website reads from
 
 # Regex to clean up model names from folder paths
 def clean_model_name(folder_name):
@@ -56,6 +56,7 @@ def process_directory():
                     
                     # ---------------------------------------------------------
                     # CRITICAL: Calculate Total Tokens for Normalization
+                    # We assume paired data, so Total Human Tokens ≈ Total AI Tokens
                     # ---------------------------------------------------------
                     total_tokens = n_pairs * k_window
 
@@ -63,7 +64,7 @@ def process_directory():
                 print(f"❌ Error reading JSON {summary_path}: {e}")
                 total_tokens = 0
 
-            # --- 3. READ CSV DATA & CALCULATE OPM ---
+            # --- 3. READ CSV DATA & CALCULATE METRICS ---
             csv_path = os.path.join(root, csv_file)
             rows = []
             try:
@@ -71,15 +72,25 @@ def process_directory():
                     reader = csv.DictReader(f)
                     for row in reader:
                         
-                        # Get raw count (c_M)
+                        # 1. Get raw counts
                         raw_count_ai = float(row['c_M']) if row.get('c_M') else 0.0
+                        raw_count_human = float(row['c_H']) if row.get('c_H') else 0.0
                         
-                        # Calculate OPM (Occurrences Per Million)
-                        # Avoid division by zero if something went wrong with metadata
+                        # 2. Calculate OPM (Occurrences Per Million)
                         if total_tokens > 0:
-                            opm = (raw_count_ai / total_tokens) * 1_000_000
+                            opm_ai = (raw_count_ai / total_tokens) * 1_000_000
+                            opm_human = (raw_count_human / total_tokens) * 1_000_000
                         else:
-                            opm = 0
+                            opm_ai = 0.0
+                            opm_human = 0.0
+
+                        # 3. Calculate Ratio (Multiplier)
+                        # If Human OPM is 0, ratio is mathematically infinite.
+                        # We set it to None (null in JSON) to let the UI handle it (e.g., showing "New" or ">100x")
+                        if opm_human > 0:
+                            ratio = opm_ai / opm_human
+                        else:
+                            ratio = None 
 
                         clean_row = {
                             "rank": int(row['rank_LAS']),
@@ -87,8 +98,10 @@ def process_directory():
                             "upos": row.get('upos', 'UNK'), 
                             "score": round(float(row['LAS']), 4),
                             
-                            # UPDATED: Storing OPM instead of raw frequency
-                            "ai_freq": round(opm, 2) 
+                            # METRICS
+                            "ai_freq": round(opm_ai, 2),
+                            "human_freq": round(opm_human, 2),
+                            "ratio": round(ratio, 1) if ratio is not None else None
                         }
                         rows.append(clean_row)
                 
@@ -116,7 +129,7 @@ def process_directory():
                     "register": register,
                     "model": model_clean
                 })
-                print(f"✅ Generated: {lang.upper()} | {register} | {model_clean} (N={n_pairs}, K={k_window})")
+                print(f"✅ Generated: {lang.upper()} | {register} | {model_clean} (N={n_pairs})")
 
             except Exception as e:
                 print(f"❌ Error processing CSV {csv_path}: {e}")

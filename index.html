@@ -259,7 +259,8 @@
                                         <th scope="col" class="px-4 py-3 bg-slate-50">Word</th>
                                         <th scope="col" class="px-4 py-3 bg-slate-50">POS</th>
                                         <th scope="col" class="px-4 py-3 text-right bg-slate-50">Score</th>
-                                        <th scope="col" class="px-4 py-3 text-right bg-slate-50">OPM</th>
+                                        <th scope="col" class="px-4 py-3 text-right bg-slate-50">AI OPM</th>
+                                        <th scope="col" class="px-4 py-3 text-right bg-slate-50">Ratio</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
@@ -275,8 +276,17 @@
                                                 </span>
                                             </td>
                                             
-                                            <td class="px-4 py-2.5 text-right font-mono text-brand font-medium" x-text="row.score"></td>
+                                            <td class="px-4 py-2.5 text-right font-mono text-slate-600 font-medium" x-text="row.score"></td>
                                             <td class="px-4 py-2.5 text-right text-slate-500 text-xs" x-text="row.ai_freq"></td>
+                                            
+                                            <td class="px-4 py-2.5 text-right">
+                                                <template x-if="row.ratio">
+                                                    <span class="font-bold text-brand" x-text="row.ratio + 'x'"></span>
+                                                </template>
+                                                <template x-if="!row.ratio">
+                                                    <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">New</span>
+                                                </template>
+                                            </td>
                                         </tr>
                                     </template>
                                 </tbody>
@@ -348,7 +358,7 @@
                     </div>
                     
                     <div class="text-center pt-0">
-                        <button
+                        <button 
                             @click="downloadZip()"
                             class="w-full bg-slate-800 hover:bg-slate-700 text-white font-medium py-4 px-4 rounded-lg shadow-sm transition flex items-center justify-center gap-2 group">
                             <svg class="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
