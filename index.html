@@ -378,458 +378,459 @@
     </footer>
 
     <script>
-        function app() {
-            return {
-                view: 'chart',
-                filterMode: 'all',
-                loading: false,
-                chartInstance: null,
-                inventory: [],
-                data: [], 
-                meta: {}, 
-                
-                // Static Insights
-                globalInsights: [],
-                
-                insightIndex: 0,
+	    function app() {
+		return {
+		    view: 'chart',
+		    filterMode: 'all',
+		    loading: false,
+		    chartInstance: null,
+		    inventory: [],
+		    data: [], 
+		    meta: {}, 
+		    
+		    // Static Insights
+		    globalInsights: [],
+		    
+		    insightIndex: 0,
 
-                // Toast state
-                toast: {
-                    show: false,
-                    title: '',
-                    message: '',
-                    hint: '',
-                    _timer: null
-                },
-                
-                // Defaults (Will be validated on load)
-                selection: { model: 'gpt-5.2', register: 'science', lang: 'en' },
+		    // Toast state
+		    toast: {
+		        show: false,
+		        title: '',
+		        message: '',
+		        hint: '',
+		        _timer: null
+		    },
+		    
+		    // Defaults (Will be validated/overwritten on load by validateSelection)
+		    selection: { model: 'gpt-5.2', register: 'science', lang: 'en' },
 
-                // --- INSIGHTS LOGIC ---
-                get generatedInsights() {
-                    if (!this.data.length && this.globalInsights.length) return this.globalInsights;
-                    if (!this.data.length) return [];
+		    // --- INSIGHTS LOGIC ---
+		    get generatedInsights() {
+		        if (!this.data.length && this.globalInsights.length) return this.globalInsights;
+		        if (!this.data.length) return [];
 
-                    const cards = [];
+		        const cards = [];
 
-                    // 1. Dynamic Summary Card (Always First)
-                    const top = this.data[0];
-                    const verb = this.data.find(d => d.upos === 'VERB');
-                    const noun = this.data.find(d => d.upos === 'NOUN');
-                    const adj = this.data.find(d => d.upos === 'ADJ');
+		        // 1. Dynamic Summary Card (Always First)
+		        const top = this.data[0];
+		        const verb = this.data.find(d => d.upos === 'VERB');
+		        const noun = this.data.find(d => d.upos === 'NOUN');
+		        const adj = this.data.find(d => d.upos === 'ADJ');
 
-                    cards.push({
-                        type: 'summary',
-                        title: 'Key Insight',
-                        main: top,
-                        leaders: [
-                            { pos: 'VERB', word: verb ? verb.word : '-' },
-                            { pos: 'NOUN', word: noun ? noun.word : '-' },
-                            { pos: 'ADJ',  word: adj ? adj.word : '-' }
-                        ]
-                    });
+		        cards.push({
+		            type: 'summary',
+		            title: 'Key Insight',
+		            main: top,
+		            leaders: [
+		                { pos: 'VERB', word: verb ? verb.word : '-' },
+		                { pos: 'NOUN', word: noun ? noun.word : '-' },
+		                { pos: 'ADJ',  word: adj ? adj.word : '-' }
+		            ]
+		        });
 
-                    // 2. Append Static Insights
-                    if (this.globalInsights.length) {
-                        cards.push(...this.globalInsights);
-                    } else {
-                        cards.push({ 
-                            type: 'about', 
-                            title: 'Methodology', 
-                            text: 'The Lexical Alignment Score is derived from windowed prevalence analysis. It offers a fully automated metric for divergence, eliminating the need for manual curation.' 
-                        });
-                    }
+		        // 2. Append Static Insights
+		        if (this.globalInsights.length) {
+		            cards.push(...this.globalInsights);
+		        } else {
+		            cards.push({ 
+		                type: 'about', 
+		                title: 'Methodology', 
+		                text: 'The Lexical Alignment Score is derived from windowed prevalence analysis. It offers a fully automated metric for divergence, eliminating the need for manual curation.' 
+		            });
+		        }
 
-                    return cards;
-                },
+		        return cards;
+		    },
 
-                // --- NAVIGATION LOGIC: "LATEST CLICK IS KING" ---
-                
-                // 1. Top Level: All unique models
-                get allModels() {
-                    if (!this.inventory.length) return [];
-                    return [...new Set(this.inventory.map(i => i.model))].sort();
-                },
+		    // --- NAVIGATION LOGIC: "LATEST CLICK IS KING" ---
+		    
+		    // 1. Top Level: All unique models
+		    get allModels() {
+		        if (!this.inventory.length) return [];
+		        return [...new Set(this.inventory.map(i => i.model))].sort();
+		    },
 
-                // 2. Registers: Show ALL registers for this model (do not filter by lang)
-                get allRegistersForModel() {
-                    if (!this.inventory.length) return [];
-                    return [...new Set(this.inventory
-                        .filter(i => i.model === this.selection.model)
-                        .map(i => i.register)
-                    )].sort();
-                },
+		    // 2. Registers: Show ALL registers for this model (do not filter by lang)
+		    get allRegistersForModel() {
+		        if (!this.inventory.length) return [];
+		        return [...new Set(this.inventory
+		            .filter(i => i.model === this.selection.model)
+		            .map(i => i.register)
+		        )].sort();
+		    },
 
-                // 3. Languages: Show ALL languages for this model (do not filter by register)
-                get allLanguagesForModel() {
-                    if (!this.inventory.length) return [];
-                    return [...new Set(this.inventory
-                        .filter(i => i.model === this.selection.model)
-                        .map(i => i.lang)
-                    )].sort();
-                },
+		    // 3. Languages: Show ALL languages for this model (do not filter by register)
+		    get allLanguagesForModel() {
+		        if (!this.inventory.length) return [];
+		        return [...new Set(this.inventory
+		            .filter(i => i.model === this.selection.model)
+		            .map(i => i.lang)
+		        )].sort();
+		    },
 
-                // --- LIMITED-COVERAGE HELPERS (for UX messaging) ---
+		    // --- LIMITED-COVERAGE HELPERS (for UX messaging) ---
 
-                get modelRegisterCount() {
-                    return this.allRegistersForModel.length;
-                },
+		    get modelRegisterCount() {
+		        return this.allRegistersForModel.length;
+		    },
 
-                get modelLanguageCount() {
-                    return this.allLanguagesForModel.length;
-                },
+		    get modelLanguageCount() {
+		        return this.allLanguagesForModel.length;
+		    },
 
-                maybeToastLimited(which) {
-                    // Show guidance only when the clicked control is effectively "locked" by model coverage.
-                    if (!this.inventory.length) return;
+		    maybeToastLimited(which) {
+		        // Show guidance only when the clicked control is effectively "locked" by model coverage.
+		        if (!this.inventory.length) return;
 
-                    if (which === 'register' && this.modelRegisterCount <= 1) {
-                        const onlyReg = this.allRegistersForModel[0] ? this.capitalize(this.allRegistersForModel[0]) : '—';
-                        this.showToast({
-                            title: 'Limited domain options for this model',
-                            message: `${this.formatModel(this.selection.model)} currently has only ${onlyReg}.`,
-                            hint: 'To change domain, switch model.'
-                        });
-                    }
+		        if (which === 'register' && this.modelRegisterCount <= 1) {
+		            const onlyReg = this.allRegistersForModel[0] ? this.capitalize(this.allRegistersForModel[0]) : '—';
+		            this.showToast({
+		                title: 'Limited domain options',
+		                message: `${this.formatModel(this.selection.model)} currently has only ${onlyReg}.`,
+		                hint: 'To change domain, switch model.'
+		            });
+		        }
 
-                    if (which === 'lang' && this.modelLanguageCount <= 1) {
-                        const onlyLang = this.allLanguagesForModel[0] ? this.allLanguagesForModel[0].toUpperCase() : '—';
-                        this.showToast({
-                            title: 'Limited language options for this model',
-                            message: `${this.formatModel(this.selection.model)} currently has only ${onlyLang}.`,
-                            hint: 'To change language, switch model.'
-                        });
-                    }
-                },
+		        if (which === 'lang' && this.modelLanguageCount <= 1) {
+		            const onlyLang = this.allLanguagesForModel[0] ? this.allLanguagesForModel[0].toUpperCase() : '—';
+		            this.showToast({
+		                title: 'Limited language options',
+		                message: `${this.formatModel(this.selection.model)} currently has only ${onlyLang}.`,
+		                hint: 'To change language, switch model.'
+		            });
+		        }
+		    },
 
-                showToast({ title, message, hint = '', ttl = 3800 }) {
-                    // Avoid stacking timers
-                    if (this.toast._timer) clearTimeout(this.toast._timer);
+		    showToast({ title, message, hint = '', ttl = 3800 }) {
+		        // Avoid stacking timers
+		        if (this.toast._timer) clearTimeout(this.toast._timer);
 
-                    this.toast.title = title;
-                    this.toast.message = message;
-                    this.toast.hint = hint;
-                    this.toast.show = true;
+		        this.toast.title = title;
+		        this.toast.message = message;
+		        this.toast.hint = hint;
+		        this.toast.show = true;
 
-                    this.toast._timer = setTimeout(() => {
-                        this.toast.show = false;
-                        this.toast._timer = null;
-                    }, ttl);
-                },
+		        this.toast._timer = setTimeout(() => {
+		            this.toast.show = false;
+		            this.toast._timer = null;
+		        }, ttl);
+		    },
 
-                hideToast() {
-                    if (this.toast._timer) clearTimeout(this.toast._timer);
-                    this.toast._timer = null;
-                    this.toast.show = false;
-                },
+		    hideToast() {
+		        if (this.toast._timer) clearTimeout(this.toast._timer);
+		        this.toast._timer = null;
+		        this.toast.show = false;
+		    },
 
-                // --- DOWNLOAD ZIP (same folder as index.html) ---
-                downloadZip() {
-                    const url = new URL('csv_files.7z', window.location.href);
-                    const a = document.createElement('a');
-                    a.href = url.toString();
-                    a.download = 'csv_files.7z';
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
+		    // --- DOWNLOAD ZIP (same folder as index.html) ---
+		    downloadZip() {
+		        const url = new URL('csv_files.7z', window.location.href);
+		        const a = document.createElement('a');
+		        a.href = url.toString();
+		        a.download = 'csv_files.7z';
+		        document.body.appendChild(a);
+		        a.click();
+		        a.remove();
 
-                    this.showToast({
-                        title: 'Download started',
-                        message: 'Downloading csv_files.7z',
-                        hint: 'If nothing happens, ensure csv_files.7z is deployed next to index.html.'
-                    });
-                },
+		        this.showToast({
+		            title: 'Download started',
+		            message: 'Downloading csv_files.7z',
+		            hint: 'If nothing happens, ensure csv_files.7z is deployed next to index.html.'
+		        });
+		    },
 
-                // --- ROBUST SELECTION VALIDATION (fixes bad defaults, stale state, and bfcache weirdness) ---
-                validateSelection() {
-                    // Needs inventory loaded
-                    const models = this.allModels;
-                    if (!models.length) return;
+		    // --- ROBUST SELECTION VALIDATION (fixes bad defaults, stale state, and bfcache weirdness) ---
+		    validateSelection() {
+		        // Needs inventory loaded
+		        const models = this.allModels;
+		        if (!models.length) return;
 
-                    // 1) Ensure model is valid
-                    if (!models.includes(this.selection.model)) {
-                        this.selection.model = models[0];
-                    }
+		        // 1) Ensure model is valid
+		        if (!models.includes(this.selection.model)) {
+		            this.selection.model = models[0];
+		        }
 
-                    // 2) Ensure register is valid for model
-                    const regs = this.allRegistersForModel;
-                    if (!regs.length) return;
+		        // 2) Ensure register is valid for model
+		        const regs = this.allRegistersForModel;
+		        if (!regs.length) return;
 
-                    if (!regs.includes(this.selection.register)) {
-                        this.selection.register = regs[0];
-                    }
+		        if (!regs.includes(this.selection.register)) {
+		            this.selection.register = regs[0];
+		        }
 
-                    // 3) Ensure language is valid for model
-                    const langs = this.allLanguagesForModel;
-                    if (!langs.length) return;
+		        // 3) Ensure language is valid for model
+		        const langs = this.allLanguagesForModel;
+		        if (!langs.length) return;
 
-                    if (!langs.includes(this.selection.lang)) {
-                        this.selection.lang = langs[0];
-                    }
+		        if (!langs.includes(this.selection.lang)) {
+		            this.selection.lang = langs[0];
+		        }
 
-                    // 4) Ensure triplet exists; if not, snap to first available entry for that model
-                    const ok = this.inventory.some(i =>
-                        i.model === this.selection.model &&
-                        i.register === this.selection.register &&
-                        i.lang === this.selection.lang
-                    );
+		        // 4) Ensure triplet exists; if not, snap to first available entry for that model
+		        const ok = this.inventory.some(i => 
+		            i.model === this.selection.model && 
+		            i.register === this.selection.register && 
+		            i.lang === this.selection.lang
+		        );
 
-                    if (!ok) {
-                        const first = this.inventory.find(i => i.model === this.selection.model);
-                        if (first) {
-                            this.selection.register = first.register;
-                            this.selection.lang = first.lang;
-                        }
-                    }
-                },
+		        if (!ok) {
+		            const first = this.inventory.find(i => i.model === this.selection.model);
+		            if (first) {
+		                this.selection.register = first.register;
+		                this.selection.lang = first.lang;
+		            }
+		        }
+		    },
 
-                // --- AVAILABILITY HELPERS ---
-                
-                // Returns { available: bool, switchTarget: string | null }
-                getRegisterAvailability(reg) {
-                    const valid = this.inventory.some(i => i.model === this.selection.model && i.register === reg && i.lang === this.selection.lang);
-                    if (valid) return { available: true, switchTarget: null };
+		    // --- AVAILABILITY HELPERS ---
+		    
+		    // Returns { available: bool, switchTarget: string | null }
+		    getRegisterAvailability(reg) {
+		        const valid = this.inventory.some(i => i.model === this.selection.model && i.register === reg && i.lang === this.selection.lang);
+		        if (valid) return { available: true, switchTarget: null };
 
-                    // Find a fallback language for this register
-                    const fallback = this.inventory.find(i => i.model === this.selection.model && i.register === reg);
-                    return { available: false, switchTarget: fallback ? fallback.lang : null };
-                },
+		        // Find a fallback language for this register
+		        const fallback = this.inventory.find(i => i.model === this.selection.model && i.register === reg);
+		        return { available: false, switchTarget: fallback ? fallback.lang : null };
+		    },
 
-                getLangAvailability(lng) {
-                    const valid = this.inventory.some(i => i.model === this.selection.model && i.register === this.selection.register && i.lang === lng);
-                    if (valid) return { available: true, switchTarget: null };
+		    getLangAvailability(lng) {
+		        const valid = this.inventory.some(i => i.model === this.selection.model && i.register === this.selection.register && i.lang === lng);
+		        if (valid) return { available: true, switchTarget: null };
 
-                    // Find a fallback register for this language
-                    const fallback = this.inventory.find(i => i.model === this.selection.model && i.lang === lng);
-                    return { available: false, switchTarget: fallback ? fallback.register : null };
-                },
+		        // Find a fallback register for this language
+		        const fallback = this.inventory.find(i => i.model === this.selection.model && i.lang === lng);
+		        return { available: false, switchTarget: fallback ? fallback.register : null };
+		    },
 
-                // --- VISUAL LABEL FORMATTERS ---
+		    // --- VISUAL LABEL FORMATTERS ---
 
-                getRegisterLabel(reg) {
-                    const status = this.getRegisterAvailability(reg);
-                    const label = this.capitalize(reg);
-                    if (status.available) return label;
-                    if (status.switchTarget) return `${label} \u27F6 switches to ${status.switchTarget.toUpperCase()}`;
-                    return label;
-                },
+		    getRegisterLabel(reg) {
+		        const status = this.getRegisterAvailability(reg);
+		        const label = this.capitalize(reg);
+		        if (status.available) return label;
+		        if (status.switchTarget) return `${label} \u27F6 switches to ${status.switchTarget.toUpperCase()}`;
+		        return label;
+		    },
 
-                getLangLabel(lng) {
-                    const status = this.getLangAvailability(lng);
-                    const label = lng.toUpperCase();
-                    if (status.available) return label;
-                    if (status.switchTarget) return `${label} \u27F6 switches to ${this.capitalize(status.switchTarget)}`;
-                    return label;
-                },
+		    getLangLabel(lng) {
+		        const status = this.getLangAvailability(lng);
+		        const label = lng.toUpperCase();
+		        if (status.available) return label;
+		        if (status.switchTarget) return `${label} \u27F6 switches to ${this.capitalize(status.switchTarget)}`;
+		        return label;
+		    },
 
-                // --- DISPLAY DATA ---
-                get displayData() {
-                    if (!this.data.length) return [];
-                    let result = this.data;
-                    const contentTags = ['NOUN', 'VERB', 'ADJ', 'ADV', 'PROPN']; 
-                    if (this.filterMode === 'content') result = result.filter(d => d.upos && contentTags.includes(d.upos));
-                    else if (this.filterMode === 'function') result = result.filter(d => d.upos && !contentTags.includes(d.upos));
-                    return result; 
-                },
+		    // --- DISPLAY DATA ---
+		    get displayData() {
+		        if (!this.data.length) return [];
+		        let result = this.data;
+		        const contentTags = ['NOUN', 'VERB', 'ADJ', 'ADV', 'PROPN']; 
+		        if (this.filterMode === 'content') result = result.filter(d => d.upos && contentTags.includes(d.upos));
+		        else if (this.filterMode === 'function') result = result.filter(d => d.upos && !contentTags.includes(d.upos));
+		        return result; 
+		    },
 
-                // --- EVENTS ---
-                async initApp() {
-                    try {
-                        // Handle bfcache restore robustly (back/forward to/from about.html)
-                        if (!this._pageshowBound) {
-                            this._pageshowBound = true;
-                            window.addEventListener('pageshow', (e) => {
-                                if (e.persisted) {
-                                    // Re-init to ensure state is consistent
-                                    this.initApp();
-                                }
-                            });
-                        }
+		    // --- EVENTS ---
+		    async initApp() {
+		        try {
+		            // Handle bfcache restore robustly (back/forward to/from about.html)
+		            if (!this._pageshowBound) {
+		                this._pageshowBound = true;
+		                window.addEventListener('pageshow', (e) => {
+		                    if (e.persisted) {
+		                        // Re-init to ensure state is consistent
+		                        this.initApp();
+		                    }
+		                });
+		            }
 
-                        const res = await fetch('data/index.json');
-                        if (!res.ok) throw new Error(`Could not load data/index.json`);
-                        this.inventory = await res.json();
-                        
-                        try {
-                            const resInsights = await fetch('insights.json');
-                            if (resInsights.ok) this.globalInsights = await resInsights.json();
-                        } catch (e) { console.warn("Insights file optional."); }
+		            const res = await fetch('data/index.json');
+		            if (!res.ok) throw new Error(`Could not load data/index.json`);
+		            this.inventory = await res.json();
+		            
+		            try {
+		                const resInsights = await fetch('insights.json');
+		                if (resInsights.ok) this.globalInsights = await resInsights.json();
+		            } catch (e) { console.warn("Insights file optional."); }
 
-                        // Apply URL params only if valid; otherwise keep current selection (which we will validate anyway)
-                        const params = new URLSearchParams(window.location.search);
+		            // Apply URL params only if valid; otherwise keep current selection (which we will validate anyway)
+		            const params = new URLSearchParams(window.location.search);
 
-                        // MODEL (validate against inventory)
-                        if (params.has('model')) {
-                            const m = params.get('model');
-                            if (this.allModels.includes(m)) this.selection.model = m;
-                        }
+		            // MODEL (validate against inventory)
+		            if (params.has('model')) {
+		                const m = params.get('model');
+		                if (this.allModels.includes(m)) this.selection.model = m;
+		            }
 
-                        // REGISTER and LANG: we can only validate these after model is set (and then validateSelection will fix triplet)
-                        if (params.has('register')) {
-                            const r = params.get('register');
-                            this.selection.register = r;
-                        }
-                        if (params.has('lang')) {
-                            const l = params.get('lang');
-                            this.selection.lang = l;
-                        }
+		            // REGISTER and LANG: we can only validate these after model is set
+		            if (params.has('register')) {
+		                this.selection.register = params.get('register');
+		            }
+		            if (params.has('lang')) {
+		                this.selection.lang = params.get('lang');
+		            }
 
-                        // Robust: fix bad defaults, bad params, or stale restored state
-                        this.validateSelection();
+		            // Robust: fix bad defaults, bad params, or stale restored state
+		            this.validateSelection();
 
-                        // Fetch with the now-valid selection
-                        this.fetchData();
+		            // Fetch with the now-valid selection
+		            this.fetchData();
 
-                    } catch (err) {
-                        console.error(err);
-                        alert("Error: Cannot load data!");
-                    }
-                },
+		        } catch (err) {
+		            console.error(err);
+		            alert("Error: Cannot load data! Check data/index.json");
+		        }
+		    },
 
-                onModelChange() {
-                    // If the model has only 1 register or 1 language, proactively nudge.
-                    if (this.modelRegisterCount <= 1) {
-                        this.showToast({
-                            title: 'Model coverage is limited',
-                            message: `${this.formatModel(this.selection.model)} has ${this.modelRegisterCount} domain option.`,
-                            hint: 'Switch model for more domain choices.',
-                            ttl: 3200
-                        });
-                    } else if (this.modelLanguageCount <= 1) {
-                        this.showToast({
-                            title: 'Model coverage is limited',
-                            message: `${this.formatModel(this.selection.model)} has ${this.modelLanguageCount} language option.`,
-                            hint: 'Switch model for more language choices.',
-                            ttl: 3200
-                        });
-                    }
+		    onModelChange() {
+		        // If the model has only 1 register or 1 language, proactively nudge.
+		        if (this.modelRegisterCount <= 1) {
+		            this.showToast({
+		                title: 'Model coverage is limited',
+		                message: `${this.formatModel(this.selection.model)} has ${this.modelRegisterCount} domain option.`,
+		                hint: 'Switch model for more domain choices.',
+		                ttl: 3200
+		            });
+		        } else if (this.modelLanguageCount <= 1) {
+		            this.showToast({
+		                title: 'Model coverage is limited',
+		                message: `${this.formatModel(this.selection.model)} has ${this.modelLanguageCount} language option.`,
+		                hint: 'Switch model for more language choices.',
+		                ttl: 3200
+		            });
+		        }
 
-                    // Snap selection to a valid triplet for this model, then fetch
-                    this.validateSelection();
-                    this.fetchData();
-                },
+		        // Snap selection to a valid triplet for this model, then fetch
+		        this.validateSelection();
+		        this.fetchData();
+		    },
 
-                onRegisterChange() {
-                    // If register options are effectively locked for this model, nudge when they change.
-                    if (this.modelRegisterCount <= 1) {
-                        this.showToast({
-                            title: 'Only one domain for this model',
-                            message: `${this.formatModel(this.selection.model)} currently supports only ${this.capitalize(this.allRegistersForModel[0] || '')}.`,
-                            hint: 'Switch model for other domains.',
-                            ttl: 3200
-                        });
-                    }
+		    onRegisterChange() {
+		        if (this.modelRegisterCount <= 1) {
+		            this.showToast({
+		                title: 'Only one domain for this model',
+		                message: `${this.formatModel(this.selection.model)} currently supports only ${this.capitalize(this.allRegistersForModel[0] || '')}.`,
+		                hint: 'Switch model for other domains.',
+		                ttl: 3200
+		            });
+		        }
+		        this.validateSelection();
+		        this.fetchData();
+		    },
 
-                    // Keep triplet valid; validateSelection will snap language if needed
-                    this.validateSelection();
-                    this.fetchData();
-                },
+		    onLangChange() {
+		        if (this.modelLanguageCount <= 1) {
+		            this.showToast({
+		                title: 'Only one language for this model',
+		                message: `${this.formatModel(this.selection.model)} currently supports only ${(this.allLanguagesForModel[0] || '').toUpperCase()}.`,
+		                hint: 'Switch model for other languages.',
+		                ttl: 3200
+		            });
+		        }
+		        this.validateSelection();
+		        this.fetchData();
+		    },
 
-                onLangChange() {
-                    // If language options are effectively locked for this model, nudge when they change.
-                    if (this.modelLanguageCount <= 1) {
-                        this.showToast({
-                            title: 'Only one language for this model',
-                            message: `${this.formatModel(this.selection.model)} currently supports only ${(this.allLanguagesForModel[0] || '').toUpperCase()}.`,
-                            hint: 'Switch model for other languages.',
-                            ttl: 3200
-                        });
-                    }
+		    setFilter(mode) {
+		        this.filterMode = mode;
+		        this.renderChart();
+		    },
 
-                    // Keep triplet valid; validateSelection will snap register if needed
-                    this.validateSelection();
-                    this.fetchData();
-                },
+		    nextInsight() {
+		        this.insightIndex = (this.insightIndex + 1) % this.generatedInsights.length;
+		    },
+		    prevInsight() {
+		        this.insightIndex = (this.insightIndex - 1 + this.generatedInsights.length) % this.generatedInsights.length;
+		    },
 
-                setFilter(mode) {
-                    this.filterMode = mode;
-                    this.renderChart();
-                },
+		    async fetchData() {
+		        if (!this.selection.model || !this.selection.lang || !this.selection.register) return; 
+		        this.loading = true;
+		        this.updateURL();
+		        
+		        const filename = `data/${this.selection.lang}_${this.selection.register}_${this.selection.model}.json`;
+		        
+		        try {
+		            const res = await fetch(filename);
+		            if(!res.ok) throw new Error(`Missing file: ${filename}`);
+		            const json = await res.json();
+		            
+		            this.data = (json.meta ? json.data : json.data || json).slice(0, 300); 
+		            this.meta = json.meta || {}; 
+		            
+		            this.insightIndex = 0; 
+		            this.renderChart();
+		        } catch (e) {
+		            console.error(e);
+		        } finally {
+		            this.loading = false;
+		        }
+		    },
 
-                nextInsight() {
-                    this.insightIndex = (this.insightIndex + 1) % this.generatedInsights.length;
-                },
-                prevInsight() {
-                    this.insightIndex = (this.insightIndex - 1 + this.generatedInsights.length) % this.generatedInsights.length;
-                },
+		    renderChart() {
+		        // 1. Cleanup existing instance (Prevents memory leaks if canvas is hidden/removed)
+		        if (this.chartInstance) {
+		            this.chartInstance.destroy();
+		            this.chartInstance = null;
+		        }
 
-                async fetchData() {
-                    if (!this.selection.model || !this.selection.lang || !this.selection.register) return; 
-                    this.loading = true;
-                    this.updateURL();
-                    
-                    const filename = `data/${this.selection.lang}_${this.selection.register}_${this.selection.model}.json`;
-                    
-                    try {
-                        const res = await fetch(filename);
-                        if(!res.ok) throw new Error(`Missing file: ${filename}`);
-                        const json = await res.json();
-                        
-                        this.data = (json.meta ? json.data : json.data || json).slice(0, 300); 
-                        this.meta = json.meta || {}; 
-                        
-                        this.insightIndex = 0; 
-                        this.renderChart();
-                    } catch (e) {
-                        console.error(e);
-                    } finally {
-                        this.loading = false;
-                    }
-                },
+		        // 2. If view isn't 'chart', do not attempt to render
+		        if (this.view !== 'chart') return;
 
-                renderChart() {
-                    const canvas = document.getElementById('mainChart');
-                    if (!canvas) return;
-                    const ctx = canvas.getContext('2d');
-                    if (this.chartInstance) this.chartInstance.destroy();
-                    
-                    const chartData = this.displayData.slice(0, 15);
-                    if (chartData.length === 0) return;
+		        const canvas = document.getElementById('mainChart');
+		        if (!canvas) return;
 
-                    this.chartInstance = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: chartData.map(d => d.word),
-                            datasets: [{
-                                label: 'Alignment Score',
-                                data: chartData.map(d => d.score),
-                                backgroundColor: '#1e3a8a',
-                                borderRadius: 4,
-                                barThickness: 'flex', maxBarThickness: 30
-                            }]
-                        },
-                        options: {
-                            responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-                            animation: false, 
-                            plugins: { legend: { display: false } },
-                            scales: {
-                                y: { grid: { display: false } },
-                                x: { grid: { color: '#f1f5f9' }, title: {display:true, text:'Overuse Score'} }
-                            }
-                        }
-                    });
-                },
+		        const ctx = canvas.getContext('2d');
+		        
+		        const chartData = this.displayData.slice(0, 15);
+		        if (chartData.length === 0) return;
 
-                updateURL() {
-                    const url = new URL(window.location);
-                    url.searchParams.set('lang', this.selection.lang);
-                    url.searchParams.set('register', this.selection.register);
-                    url.searchParams.set('model', this.selection.model);
-                    window.history.pushState({}, '', url);
-                },
+		        this.chartInstance = new Chart(ctx, {
+		            type: 'bar',
+		            data: {
+		                labels: chartData.map(d => d.word),
+		                datasets: [{
+		                    label: 'Alignment Score',
+		                    data: chartData.map(d => d.score),
+		                    backgroundColor: '#1e3a8a',
+		                    borderRadius: 4,
+		                    barThickness: 'flex', maxBarThickness: 30
+		                }]
+		            },
+		            options: {
+		                responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+		                animation: false, 
+		                plugins: { legend: { display: false } },
+		                scales: {
+		                    y: { grid: { display: false } },
+		                    x: { grid: { color: '#f1f5f9' }, title: {display:true, text:'Overuse Score'} }
+		                }
+		            }
+		        });
+		    },
 
-                formatK(num) {
-                    if (!num) return '-';
-                    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-                    if (num >= 1000) return (num / 1000).toFixed(0) + 'k';
-                    return num;
-                },
+		    updateURL() {
+		        const url = new URL(window.location);
+		        url.searchParams.set('lang', this.selection.lang);
+		        url.searchParams.set('register', this.selection.register);
+		        url.searchParams.set('model', this.selection.model);
+		        window.history.pushState({}, '', url);
+		    },
 
-                capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; },
-                formatModel(s) { return s ? s.toUpperCase() : ''; }
-            }
-        }
-    </script>
+		    formatK(num) {
+		        if (!num) return '-';
+		        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+		        if (num >= 1000) return (num / 1000).toFixed(0) + 'k';
+		        return num;
+		    },
+
+		    capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; },
+		    formatModel(s) { return s ? s.toUpperCase() : ''; }
+		}
+	    }
+	</script>
 </body>
 </html>
 
