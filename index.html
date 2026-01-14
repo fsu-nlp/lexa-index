@@ -74,11 +74,8 @@
         [x-cloak] { display: none !important; }
         body { font-family: 'Inter', sans-serif; }
         .academic-text { font-family: 'Merriweather', serif; }
-        /* Custom scrollbar for table */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        
-        /* Optional: Visual styling for the 'ghost' options in the dropdown */
         option.has-switch { color: #64748b; font-style: italic; }
     </style>
 </head>
@@ -153,59 +150,99 @@
                 <div class="inline-block text-lg md:text-2xl text-slate-600 leading-loose">
                     Show me the words that
                     
-                    <div class="relative inline-block mx-1 group">
+                    <!-- MODEL -->
+                    <div class="relative inline-block mx-1 group align-middle">
                         <label for="model-select" class="sr-only">Select AI Model</label>
-                        <select id="model-select" x-model="selection.model" @change="onModelChange"
-                                class="appearance-none font-bold text-brand bg-transparent border-b-2 border-brand/20 py-1 pr-6 pl-1 focus:outline-none focus:border-brand cursor-pointer hover:bg-white transition rounded-t">
-                            <template x-for="m in allModels" :key="m">
-                                <option :value="m" x-text="formatModel(m)"></option>
-                            </template>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center text-brand">
-                            <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
-                        </div>
+
+                        <template x-if="ready">
+                            <div class="relative inline-block">
+                                <select id="model-select"
+                                        x-model="selection.model"
+                                        @change="onModelChange()"
+                                        class="appearance-none font-bold text-brand bg-transparent border-b-2 border-brand/20 py-1 pr-6 pl-1 focus:outline-none focus:border-brand cursor-pointer hover:bg-white transition rounded-t">
+                                    <template x-for="m in allModels" :key="m">
+                                        <option :value="m" x-text="formatModel(m)"></option>
+                                    </template>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center text-brand">
+                                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20" aria-hidden="true">
+                                        <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template x-if="!ready">
+                            <span class="inline-block h-8 w-40 bg-slate-200/70 rounded-md"></span>
+                        </template>
                     </div>
 
                     overuses in
 
-                    <div class="relative inline-block mx-1">
+                    <!-- REGISTER -->
+                    <div class="relative inline-block mx-1 align-middle">
                         <label for="register-select" class="sr-only">Select Register</label>
-                        <select id="register-select" x-model="selection.register"
-                                @click="maybeToastLimited('register')"
-                                @focus="maybeToastLimited('register')"
-                                @change="onRegisterChange"
-                                class="appearance-none font-bold text-brand bg-transparent border-b-2 border-brand/20 py-1 pr-6 pl-1 focus:outline-none focus:border-brand cursor-pointer hover:bg-white transition rounded-t">
-                            <template x-for="r in allRegistersForModel" :key="r">
-                                <option :value="r" 
-                                        :class="getRegisterAvailability(r).available ? '' : 'has-switch'"
-                                        x-text="getRegisterLabel(r)">
-                                </option>
-                            </template>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center text-brand">
-                            <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 0 010-1.414z"/></svg>
-                        </div>
+
+                        <template x-if="ready">
+                            <div class="relative inline-block">
+                                <select id="register-select"
+                                        x-model="selection.register"
+                                        @click="maybeToastLimited('register')"
+                                        @focus="maybeToastLimited('register')"
+                                        @change="onRegisterChange()"
+                                        class="appearance-none font-bold text-brand bg-transparent border-b-2 border-brand/20 py-1 pr-6 pl-1 focus:outline-none focus:border-brand cursor-pointer hover:bg-white transition rounded-t">
+                                    <template x-for="r in allRegistersForModel" :key="r">
+                                        <option :value="r" 
+                                                :class="getRegisterAvailability(r).available ? '' : 'has-switch'"
+                                                x-text="getRegisterLabel(r)">
+                                        </option>
+                                    </template>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center text-brand">
+                                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20" aria-hidden="true">
+                                        <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template x-if="!ready">
+                            <span class="inline-block h-8 w-32 bg-slate-200/70 rounded-md"></span>
+                        </template>
                     </div>
 
                     texts in
 
-                    <div class="relative inline-block mx-1">
+                    <!-- LANGUAGE -->
+                    <div class="relative inline-block mx-1 align-middle">
                         <label for="lang-select" class="sr-only">Select Language</label>
-                        <select id="lang-select" x-model="selection.lang"
-                                @click="maybeToastLimited('lang')"
-                                @focus="maybeToastLimited('lang')"
-                                @change="onLangChange"
-                                class="appearance-none font-bold text-brand bg-transparent border-b-2 border-brand/20 py-1 pr-6 pl-1 focus:outline-none focus:border-brand cursor-pointer hover:bg-white transition rounded-t">
-                            <template x-for="l in allLanguagesForModel" :key="l">
-                                <option :value="l" 
-                                        :class="getLangAvailability(l).available ? '' : 'has-switch'"
-                                        x-text="getLangLabel(l)">
-                                </option>
-                            </template>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center text-brand">
-                            <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20" aria-hidden="true"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 0 010-1.414z"/></svg>
-                        </div>
+
+                        <template x-if="ready">
+                            <div class="relative inline-block">
+                                <select id="lang-select"
+                                        x-model="selection.lang"
+                                        @click="maybeToastLimited('lang')"
+                                        @focus="maybeToastLimited('lang')"
+                                        @change="onLangChange()"
+                                        class="appearance-none font-bold text-brand bg-transparent border-b-2 border-brand/20 py-1 pr-6 pl-1 focus:outline-none focus:border-brand cursor-pointer hover:bg-white transition rounded-t">
+                                    <template x-for="l in allLanguagesForModel" :key="l">
+                                        <option :value="l" 
+                                                :class="getLangAvailability(l).available ? '' : 'has-switch'"
+                                                x-text="getLangLabel(l)">
+                                        </option>
+                                    </template>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center text-brand">
+                                    <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20" aria-hidden="true">
+                                        <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 0 010-1.414z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </template>
+
+                        <template x-if="!ready">
+                            <span class="inline-block h-8 w-20 bg-slate-200/70 rounded-md"></span>
+                        </template>
                     </div>
                     .
                 </div>
@@ -233,8 +270,18 @@
                             </div>
 
                             <div class="flex bg-slate-100 p-1 rounded-lg" role="group" aria-label="View Toggle">
-                                <button @click="view = 'chart'" :class="view === 'chart' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-3 py-1 rounded-md text-xs font-medium transition" aria-label="Show Chart View">Chart</button>
-                                <button @click="view = 'table'" :class="view === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-3 py-1 rounded-md text-xs font-medium transition" aria-label="Show Table View">Table</button>
+                                <button
+                                    @click="view = 'chart'; $nextTick(() => renderChart())"
+                                    :class="view === 'chart' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                                    class="px-3 py-1 rounded-md text-xs font-medium transition"
+                                    aria-label="Show Chart View"
+                                >Chart</button>
+                                <button
+                                    @click="view = 'table'"
+                                    :class="view === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+                                    class="px-3 py-1 rounded-md text-xs font-medium transition"
+                                    aria-label="Show Table View"
+                                >Table</button>
                             </div>
                         </div>
                     </div>
@@ -378,459 +425,451 @@
     </footer>
 
     <script>
-	    function app() {
-		return {
-		    view: 'chart',
-		    filterMode: 'all',
-		    loading: false,
-		    chartInstance: null,
-		    inventory: [],
-		    data: [], 
-		    meta: {}, 
-		    
-		    // Static Insights
-		    globalInsights: [],
-		    
-		    insightIndex: 0,
+        function app() {
+            return {
+                // NEW: gate rendering of selects until inventory+selection are resolved
+                ready: false,
 
-		    // Toast state
-		    toast: {
-		        show: false,
-		        title: '',
-		        message: '',
-		        hint: '',
-		        _timer: null
-		    },
-		    
-		    // Defaults (Will be validated/overwritten on load by validateSelection)
-		    selection: { model: 'gpt-5.2', register: 'science', lang: 'en' },
+                view: 'chart',
+                filterMode: 'all',
+                loading: false,
+                chartInstance: null,
+                inventory: [],
+                data: [], 
+                meta: {}, 
+                
+                globalInsights: [],
+                insightIndex: 0,
 
-		    // --- INSIGHTS LOGIC ---
-		    get generatedInsights() {
-		        if (!this.data.length && this.globalInsights.length) return this.globalInsights;
-		        if (!this.data.length) return [];
+                toast: {
+                    show: false,
+                    title: '',
+                    message: '',
+                    hint: '',
+                    _timer: null
+                },
+                
+                // Default (used when URL has no params). You can change this safely now.
+                selection: { model: 'gpt-5.2', register: 'science', lang: 'en' },
 
-		        const cards = [];
+                // --- INSIGHTS LOGIC ---
+                get generatedInsights() {
+                    if (!this.data.length && this.globalInsights.length) return this.globalInsights;
+                    if (!this.data.length) return [];
 
-		        // 1. Dynamic Summary Card (Always First)
-		        const top = this.data[0];
-		        const verb = this.data.find(d => d.upos === 'VERB');
-		        const noun = this.data.find(d => d.upos === 'NOUN');
-		        const adj = this.data.find(d => d.upos === 'ADJ');
+                    const cards = [];
+                    const top = this.data[0];
+                    const verb = this.data.find(d => d.upos === 'VERB');
+                    const noun = this.data.find(d => d.upos === 'NOUN');
+                    const adj = this.data.find(d => d.upos === 'ADJ');
 
-		        cards.push({
-		            type: 'summary',
-		            title: 'Key Insight',
-		            main: top,
-		            leaders: [
-		                { pos: 'VERB', word: verb ? verb.word : '-' },
-		                { pos: 'NOUN', word: noun ? noun.word : '-' },
-		                { pos: 'ADJ',  word: adj ? adj.word : '-' }
-		            ]
-		        });
+                    cards.push({
+                        type: 'summary',
+                        title: 'Key Insight',
+                        main: top,
+                        leaders: [
+                            { pos: 'VERB', word: verb ? verb.word : '-' },
+                            { pos: 'NOUN', word: noun ? noun.word : '-' },
+                            { pos: 'ADJ',  word: adj ? adj.word : '-' }
+                        ]
+                    });
 
-		        // 2. Append Static Insights
-		        if (this.globalInsights.length) {
-		            cards.push(...this.globalInsights);
-		        } else {
-		            cards.push({ 
-		                type: 'about', 
-		                title: 'Methodology', 
-		                text: 'The Lexical Alignment Score is derived from windowed prevalence analysis. It offers a fully automated metric for divergence, eliminating the need for manual curation.' 
-		            });
-		        }
+                    if (this.globalInsights.length) {
+                        cards.push(...this.globalInsights);
+                    } else {
+                        cards.push({ 
+                            type: 'about', 
+                            title: 'Methodology', 
+                            text: 'The Lexical Alignment Score is derived from windowed prevalence analysis. It offers a fully automated metric for divergence, eliminating the need for manual curation.' 
+                        });
+                    }
 
-		        return cards;
-		    },
+                    return cards;
+                },
 
-		    // --- NAVIGATION LOGIC: "LATEST CLICK IS KING" ---
-		    
-		    // 1. Top Level: All unique models
-		    get allModels() {
-		        if (!this.inventory.length) return [];
-		        return [...new Set(this.inventory.map(i => i.model))].sort();
-		    },
+                // --- NAVIGATION ---
+                get allModels() {
+                    if (!this.inventory.length) return [];
+                    return [...new Set(this.inventory.map(i => i.model))].sort();
+                },
 
-		    // 2. Registers: Show ALL registers for this model (do not filter by lang)
-		    get allRegistersForModel() {
-		        if (!this.inventory.length) return [];
-		        return [...new Set(this.inventory
-		            .filter(i => i.model === this.selection.model)
-		            .map(i => i.register)
-		        )].sort();
-		    },
+                get allRegistersForModel() {
+                    if (!this.inventory.length) return [];
+                    return [...new Set(this.inventory
+                        .filter(i => i.model === this.selection.model)
+                        .map(i => i.register)
+                    )].sort();
+                },
 
-		    // 3. Languages: Show ALL languages for this model (do not filter by register)
-		    get allLanguagesForModel() {
-		        if (!this.inventory.length) return [];
-		        return [...new Set(this.inventory
-		            .filter(i => i.model === this.selection.model)
-		            .map(i => i.lang)
-		        )].sort();
-		    },
+                get allLanguagesForModel() {
+                    if (!this.inventory.length) return [];
+                    return [...new Set(this.inventory
+                        .filter(i => i.model === this.selection.model)
+                        .map(i => i.lang)
+                    )].sort();
+                },
 
-		    // --- LIMITED-COVERAGE HELPERS (for UX messaging) ---
+                get modelRegisterCount() { return this.allRegistersForModel.length; },
+                get modelLanguageCount() { return this.allLanguagesForModel.length; },
 
-		    get modelRegisterCount() {
-		        return this.allRegistersForModel.length;
-		    },
+                maybeToastLimited(which) {
+                    if (!this.inventory.length) return;
 
-		    get modelLanguageCount() {
-		        return this.allLanguagesForModel.length;
-		    },
+                    if (which === 'register' && this.modelRegisterCount <= 1) {
+                        const onlyReg = this.allRegistersForModel[0] ? this.capitalize(this.allRegistersForModel[0]) : '—';
+                        this.showToast({
+                            title: 'Limited domain options',
+                            message: `${this.formatModel(this.selection.model)} currently has only ${onlyReg}.`,
+                            hint: 'To change domain, switch model.'
+                        });
+                    }
 
-		    maybeToastLimited(which) {
-		        // Show guidance only when the clicked control is effectively "locked" by model coverage.
-		        if (!this.inventory.length) return;
+                    if (which === 'lang' && this.modelLanguageCount <= 1) {
+                        const onlyLang = this.allLanguagesForModel[0] ? this.allLanguagesForModel[0].toUpperCase() : '—';
+                        this.showToast({
+                            title: 'Limited language options',
+                            message: `${this.formatModel(this.selection.model)} currently has only ${onlyLang}.`,
+                            hint: 'To change language, switch model.'
+                        });
+                    }
+                },
 
-		        if (which === 'register' && this.modelRegisterCount <= 1) {
-		            const onlyReg = this.allRegistersForModel[0] ? this.capitalize(this.allRegistersForModel[0]) : '—';
-		            this.showToast({
-		                title: 'Limited domain options',
-		                message: `${this.formatModel(this.selection.model)} currently has only ${onlyReg}.`,
-		                hint: 'To change domain, switch model.'
-		            });
-		        }
+                showToast({ title, message, hint = '', ttl = 3800 }) {
+                    if (this.toast._timer) clearTimeout(this.toast._timer);
+                    this.toast.title = title;
+                    this.toast.message = message;
+                    this.toast.hint = hint;
+                    this.toast.show = true;
 
-		        if (which === 'lang' && this.modelLanguageCount <= 1) {
-		            const onlyLang = this.allLanguagesForModel[0] ? this.allLanguagesForModel[0].toUpperCase() : '—';
-		            this.showToast({
-		                title: 'Limited language options',
-		                message: `${this.formatModel(this.selection.model)} currently has only ${onlyLang}.`,
-		                hint: 'To change language, switch model.'
-		            });
-		        }
-		    },
+                    this.toast._timer = setTimeout(() => {
+                        this.toast.show = false;
+                        this.toast._timer = null;
+                    }, ttl);
+                },
 
-		    showToast({ title, message, hint = '', ttl = 3800 }) {
-		        // Avoid stacking timers
-		        if (this.toast._timer) clearTimeout(this.toast._timer);
+                hideToast() {
+                    if (this.toast._timer) clearTimeout(this.toast._timer);
+                    this.toast._timer = null;
+                    this.toast.show = false;
+                },
 
-		        this.toast.title = title;
-		        this.toast.message = message;
-		        this.toast.hint = hint;
-		        this.toast.show = true;
+                downloadZip() {
+                    const url = new URL('csv_files.7z', window.location.href);
+                    const a = document.createElement('a');
+                    a.href = url.toString();
+                    a.download = 'csv_files.7z';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
 
-		        this.toast._timer = setTimeout(() => {
-		            this.toast.show = false;
-		            this.toast._timer = null;
-		        }, ttl);
-		    },
+                    this.showToast({
+                        title: 'Download started',
+                        message: 'Downloading csv_files.7z',
+                        hint: 'If nothing happens, ensure csv_files.7z is deployed next to index.html.'
+                    });
+                },
 
-		    hideToast() {
-		        if (this.toast._timer) clearTimeout(this.toast._timer);
-		        this.toast._timer = null;
-		        this.toast.show = false;
-		    },
+                validateSelection() {
+                    const models = this.allModels;
+                    if (!models.length) return;
 
-		    // --- DOWNLOAD ZIP (same folder as index.html) ---
-		    downloadZip() {
-		        const url = new URL('csv_files.7z', window.location.href);
-		        const a = document.createElement('a');
-		        a.href = url.toString();
-		        a.download = 'csv_files.7z';
-		        document.body.appendChild(a);
-		        a.click();
-		        a.remove();
+                    if (!models.includes(this.selection.model)) {
+                        this.selection.model = models[0];
+                    }
 
-		        this.showToast({
-		            title: 'Download started',
-		            message: 'Downloading csv_files.7z',
-		            hint: 'If nothing happens, ensure csv_files.7z is deployed next to index.html.'
-		        });
-		    },
+                    const regs = this.allRegistersForModel;
+                    if (!regs.length) return;
+                    if (!regs.includes(this.selection.register)) {
+                        this.selection.register = regs[0];
+                    }
 
-		    // --- ROBUST SELECTION VALIDATION (fixes bad defaults, stale state, and bfcache weirdness) ---
-		    validateSelection() {
-		        // Needs inventory loaded
-		        const models = this.allModels;
-		        if (!models.length) return;
+                    const langs = this.allLanguagesForModel;
+                    if (!langs.length) return;
+                    if (!langs.includes(this.selection.lang)) {
+                        this.selection.lang = langs[0];
+                    }
 
-		        // 1) Ensure model is valid
-		        if (!models.includes(this.selection.model)) {
-		            this.selection.model = models[0];
-		        }
+                    const ok = this.inventory.some(i =>
+                        i.model === this.selection.model &&
+                        i.register === this.selection.register &&
+                        i.lang === this.selection.lang
+                    );
 
-		        // 2) Ensure register is valid for model
-		        const regs = this.allRegistersForModel;
-		        if (!regs.length) return;
+                    if (!ok) {
+                        const first = this.inventory.find(i => i.model === this.selection.model);
+                        if (first) {
+                            this.selection.register = first.register;
+                            this.selection.lang = first.lang;
+                        }
+                    }
+                },
 
-		        if (!regs.includes(this.selection.register)) {
-		            this.selection.register = regs[0];
-		        }
+                getRegisterAvailability(reg) {
+                    const valid = this.inventory.some(i => i.model === this.selection.model && i.register === reg && i.lang === this.selection.lang);
+                    if (valid) return { available: true, switchTarget: null };
+                    const fallback = this.inventory.find(i => i.model === this.selection.model && i.register === reg);
+                    return { available: false, switchTarget: fallback ? fallback.lang : null };
+                },
 
-		        // 3) Ensure language is valid for model
-		        const langs = this.allLanguagesForModel;
-		        if (!langs.length) return;
+                getLangAvailability(lng) {
+                    const valid = this.inventory.some(i => i.model === this.selection.model && i.register === this.selection.register && i.lang === lng);
+                    if (valid) return { available: true, switchTarget: null };
+                    const fallback = this.inventory.find(i => i.model === this.selection.model && i.lang === lng);
+                    return { available: false, switchTarget: fallback ? fallback.register : null };
+                },
 
-		        if (!langs.includes(this.selection.lang)) {
-		            this.selection.lang = langs[0];
-		        }
+                getRegisterLabel(reg) {
+                    const status = this.getRegisterAvailability(reg);
+                    const label = this.capitalize(reg);
+                    if (status.available) return label;
+                    if (status.switchTarget) return `${label} \u27F6 switches to ${status.switchTarget.toUpperCase()}`;
+                    return label;
+                },
 
-		        // 4) Ensure triplet exists; if not, snap to first available entry for that model
-		        const ok = this.inventory.some(i => 
-		            i.model === this.selection.model && 
-		            i.register === this.selection.register && 
-		            i.lang === this.selection.lang
-		        );
+                getLangLabel(lng) {
+                    const status = this.getLangAvailability(lng);
+                    const label = lng.toUpperCase();
+                    if (status.available) return label;
+                    if (status.switchTarget) return `${label} \u27F6 switches to ${this.capitalize(status.switchTarget)}`;
+                    return label;
+                },
 
-		        if (!ok) {
-		            const first = this.inventory.find(i => i.model === this.selection.model);
-		            if (first) {
-		                this.selection.register = first.register;
-		                this.selection.lang = first.lang;
-		            }
-		        }
-		    },
+                get displayData() {
+                    if (!this.data.length) return [];
+                    let result = this.data;
+                    const contentTags = ['NOUN', 'VERB', 'ADJ', 'ADV', 'PROPN'];
+                    if (this.filterMode === 'content') result = result.filter(d => d.upos && contentTags.includes(d.upos));
+                    else if (this.filterMode === 'function') result = result.filter(d => d.upos && !contentTags.includes(d.upos));
+                    return result;
+                },
 
-		    // --- AVAILABILITY HELPERS ---
-		    
-		    // Returns { available: bool, switchTarget: string | null }
-		    getRegisterAvailability(reg) {
-		        const valid = this.inventory.some(i => i.model === this.selection.model && i.register === reg && i.lang === this.selection.lang);
-		        if (valid) return { available: true, switchTarget: null };
+                async initApp() {
+                    try {
+                        // reset gate on re-init
+                        this.ready = false;
 
-		        // Find a fallback language for this register
-		        const fallback = this.inventory.find(i => i.model === this.selection.model && i.register === reg);
-		        return { available: false, switchTarget: fallback ? fallback.lang : null };
-		    },
+                        if (!this._pageshowBound) {
+                            this._pageshowBound = true;
+                            window.addEventListener('pageshow', (e) => {
+                                if (e.persisted) this.initApp();
+                            });
+                        }
 
-		    getLangAvailability(lng) {
-		        const valid = this.inventory.some(i => i.model === this.selection.model && i.register === this.selection.register && i.lang === lng);
-		        if (valid) return { available: true, switchTarget: null };
+                        const res = await fetch('data/index.json');
+                        if (!res.ok) throw new Error(`Could not load data/index.json`);
+                        this.inventory = await res.json();
 
-		        // Find a fallback register for this language
-		        const fallback = this.inventory.find(i => i.model === this.selection.model && i.lang === lng);
-		        return { available: false, switchTarget: fallback ? fallback.register : null };
-		    },
+                        try {
+                            const resInsights = await fetch('insights.json');
+                            if (resInsights.ok) this.globalInsights = await resInsights.json();
+                        } catch (e) { console.warn("Insights file optional."); }
 
-		    // --- VISUAL LABEL FORMATTERS ---
+                        // IMPORTANT: decide desired selection *before* rendering selects
+                        const params = new URLSearchParams(window.location.search);
 
-		    getRegisterLabel(reg) {
-		        const status = this.getRegisterAvailability(reg);
-		        const label = this.capitalize(reg);
-		        if (status.available) return label;
-		        if (status.switchTarget) return `${label} \u27F6 switches to ${status.switchTarget.toUpperCase()}`;
-		        return label;
-		    },
+                        // Use current in-code defaults as preferred defaults (safe now)
+                        const preferred = { ...this.selection };
 
-		    getLangLabel(lng) {
-		        const status = this.getLangAvailability(lng);
-		        const label = lng.toUpperCase();
-		        if (status.available) return label;
-		        if (status.switchTarget) return `${label} \u27F6 switches to ${this.capitalize(status.switchTarget)}`;
-		        return label;
-		    },
+                        const desired = {
+                            model: params.get('model') || preferred.model,
+                            register: params.get('register') || preferred.register,
+                            lang: params.get('lang') || preferred.lang
+                        };
 
-		    // --- DISPLAY DATA ---
-		    get displayData() {
-		        if (!this.data.length) return [];
-		        let result = this.data;
-		        const contentTags = ['NOUN', 'VERB', 'ADJ', 'ADV', 'PROPN']; 
-		        if (this.filterMode === 'content') result = result.filter(d => d.upos && contentTags.includes(d.upos));
-		        else if (this.filterMode === 'function') result = result.filter(d => d.upos && !contentTags.includes(d.upos));
-		        return result; 
-		    },
+                        // Validate desired.model against inventory (fallback to preferred or first)
+                        const models = this.allModels;
+                        const preferredOk = models.includes(preferred.model);
 
-		    // --- EVENTS ---
-		    async initApp() {
-		        try {
-		            // Handle bfcache restore robustly (back/forward to/from about.html)
-		            if (!this._pageshowBound) {
-		                this._pageshowBound = true;
-		                window.addEventListener('pageshow', (e) => {
-		                    if (e.persisted) {
-		                        // Re-init to ensure state is consistent
-		                        this.initApp();
-		                    }
-		                });
-		            }
+                        if (!models.includes(desired.model)) {
+                            desired.model = preferredOk ? preferred.model : (models[0] || desired.model);
+                        }
 
-		            const res = await fetch('data/index.json');
-		            if (!res.ok) throw new Error(`Could not load data/index.json`);
-		            this.inventory = await res.json();
-		            
-		            try {
-		                const resInsights = await fetch('insights.json');
-		                if (resInsights.ok) this.globalInsights = await resInsights.json();
-		            } catch (e) { console.warn("Insights file optional."); }
+                        // Apply desired (may still be partially invalid); then validate fully
+                        this.selection.model = desired.model;
+                        this.selection.register = desired.register;
+                        this.selection.lang = desired.lang;
 
-		            // Apply URL params only if valid; otherwise keep current selection (which we will validate anyway)
-		            const params = new URLSearchParams(window.location.search);
+                        this.validateSelection();
 
-		            // MODEL (validate against inventory)
-		            if (params.has('model')) {
-		                const m = params.get('model');
-		                if (this.allModels.includes(m)) this.selection.model = m;
-		            }
+                        // Now render the selects (they will be created with options already present)
+                        this.ready = true;
 
-		            // REGISTER and LANG: we can only validate these after model is set
-		            if (params.has('register')) {
-		                this.selection.register = params.get('register');
-		            }
-		            if (params.has('lang')) {
-		                this.selection.lang = params.get('lang');
-		            }
+                        // Once selects exist, sync (paranoia) + fetch
+                        this.$nextTick(() => {
+                            const ms = document.getElementById('model-select');
+                            const rs = document.getElementById('register-select');
+                            const ls = document.getElementById('lang-select');
+                            if (ms) ms.value = this.selection.model;
+                            if (rs) rs.value = this.selection.register;
+                            if (ls) ls.value = this.selection.lang;
 
-		            // Robust: fix bad defaults, bad params, or stale restored state
-		            this.validateSelection();
+                            this.fetchData();
+                        });
 
-		            // Fetch with the now-valid selection
-		            this.fetchData();
+                    } catch (err) {
+                        console.error(err);
+                        alert("Error: Cannot load data! Check data/index.json");
+                    }
+                },
 
-		        } catch (err) {
-		            console.error(err);
-		            alert("Error: Cannot load data! Check data/index.json");
-		        }
-		    },
+                onModelChange() {
+                    if (this.modelRegisterCount <= 1) {
+                        this.showToast({
+                            title: 'Model coverage is limited',
+                            message: `${this.formatModel(this.selection.model)} has ${this.modelRegisterCount} domain option.`,
+                            hint: 'Switch model for more domain choices.',
+                            ttl: 3200
+                        });
+                    } else if (this.modelLanguageCount <= 1) {
+                        this.showToast({
+                            title: 'Model coverage is limited',
+                            message: `${this.formatModel(this.selection.model)} has ${this.modelLanguageCount} language option.`,
+                            hint: 'Switch model for more language choices.',
+                            ttl: 3200
+                        });
+                    }
 
-		    onModelChange() {
-		        // If the model has only 1 register or 1 language, proactively nudge.
-		        if (this.modelRegisterCount <= 1) {
-		            this.showToast({
-		                title: 'Model coverage is limited',
-		                message: `${this.formatModel(this.selection.model)} has ${this.modelRegisterCount} domain option.`,
-		                hint: 'Switch model for more domain choices.',
-		                ttl: 3200
-		            });
-		        } else if (this.modelLanguageCount <= 1) {
-		            this.showToast({
-		                title: 'Model coverage is limited',
-		                message: `${this.formatModel(this.selection.model)} has ${this.modelLanguageCount} language option.`,
-		                hint: 'Switch model for more language choices.',
-		                ttl: 3200
-		            });
-		        }
+                    this.validateSelection();
+                    this.fetchData();
+                },
 
-		        // Snap selection to a valid triplet for this model, then fetch
-		        this.validateSelection();
-		        this.fetchData();
-		    },
+                onRegisterChange() {
+                    if (this.modelRegisterCount <= 1) {
+                        this.showToast({
+                            title: 'Only one domain for this model',
+                            message: `${this.formatModel(this.selection.model)} currently supports only ${this.capitalize(this.allRegistersForModel[0] || '')}.`,
+                            hint: 'Switch model for other domains.',
+                            ttl: 3200
+                        });
+                    }
+                    this.validateSelection();
+                    this.fetchData();
+                },
 
-		    onRegisterChange() {
-		        if (this.modelRegisterCount <= 1) {
-		            this.showToast({
-		                title: 'Only one domain for this model',
-		                message: `${this.formatModel(this.selection.model)} currently supports only ${this.capitalize(this.allRegistersForModel[0] || '')}.`,
-		                hint: 'Switch model for other domains.',
-		                ttl: 3200
-		            });
-		        }
-		        this.validateSelection();
-		        this.fetchData();
-		    },
+                onLangChange() {
+                    if (this.modelLanguageCount <= 1) {
+                        this.showToast({
+                            title: 'Only one language for this model',
+                            message: `${this.formatModel(this.selection.model)} currently supports only ${(this.allLanguagesForModel[0] || '').toUpperCase()}.`,
+                            hint: 'Switch model for other languages.',
+                            ttl: 3200
+                        });
+                    }
+                    this.validateSelection();
+                    this.fetchData();
+                },
 
-		    onLangChange() {
-		        if (this.modelLanguageCount <= 1) {
-		            this.showToast({
-		                title: 'Only one language for this model',
-		                message: `${this.formatModel(this.selection.model)} currently supports only ${(this.allLanguagesForModel[0] || '').toUpperCase()}.`,
-		                hint: 'Switch model for other languages.',
-		                ttl: 3200
-		            });
-		        }
-		        this.validateSelection();
-		        this.fetchData();
-		    },
+                setFilter(mode) {
+                    this.filterMode = mode;
+                    this.renderChart();
+                },
 
-		    setFilter(mode) {
-		        this.filterMode = mode;
-		        this.renderChart();
-		    },
+                nextInsight() {
+                    this.insightIndex = (this.insightIndex + 1) % this.generatedInsights.length;
+                },
+                prevInsight() {
+                    this.insightIndex = (this.insightIndex - 1 + this.generatedInsights.length) % this.generatedInsights.length;
+                },
 
-		    nextInsight() {
-		        this.insightIndex = (this.insightIndex + 1) % this.generatedInsights.length;
-		    },
-		    prevInsight() {
-		        this.insightIndex = (this.insightIndex - 1 + this.generatedInsights.length) % this.generatedInsights.length;
-		    },
+                async fetchData() {
+                    if (!this.selection.model || !this.selection.lang || !this.selection.register) return;
 
-		    async fetchData() {
-		        if (!this.selection.model || !this.selection.lang || !this.selection.register) return; 
-		        this.loading = true;
-		        this.updateURL();
-		        
-		        const filename = `data/${this.selection.lang}_${this.selection.register}_${this.selection.model}.json`;
-		        
-		        try {
-		            const res = await fetch(filename);
-		            if(!res.ok) throw new Error(`Missing file: ${filename}`);
-		            const json = await res.json();
-		            
-		            this.data = (json.meta ? json.data : json.data || json).slice(0, 300); 
-		            this.meta = json.meta || {}; 
-		            
-		            this.insightIndex = 0; 
-		            this.renderChart();
-		        } catch (e) {
-		            console.error(e);
-		        } finally {
-		            this.loading = false;
-		        }
-		    },
+                    // Extra safety: ensure triplet exists before fetching
+                    const exists = this.inventory.some(i =>
+                        i.model === this.selection.model &&
+                        i.register === this.selection.register &&
+                        i.lang === this.selection.lang
+                    );
+                    if (!exists) {
+                        console.warn("Triplet not in inventory:", this.selection);
+                        return;
+                    }
 
-		    renderChart() {
-		        // 1. Cleanup existing instance (Prevents memory leaks if canvas is hidden/removed)
-		        if (this.chartInstance) {
-		            this.chartInstance.destroy();
-		            this.chartInstance = null;
-		        }
+                    this.loading = true;
+                    this.updateURL();
 
-		        // 2. If view isn't 'chart', do not attempt to render
-		        if (this.view !== 'chart') return;
+                    const filename = `data/${this.selection.lang}_${this.selection.register}_${this.selection.model}.json`;
 
-		        const canvas = document.getElementById('mainChart');
-		        if (!canvas) return;
+                    try {
+                        const res = await fetch(filename);
+                        if (!res.ok) throw new Error(`Missing file: ${filename}`);
+                        const json = await res.json();
 
-		        const ctx = canvas.getContext('2d');
-		        
-		        const chartData = this.displayData.slice(0, 15);
-		        if (chartData.length === 0) return;
+                        this.data = (json.meta ? json.data : json.data || json).slice(0, 300);
+                        this.meta = json.meta || {};
+                        this.insightIndex = 0;
 
-		        this.chartInstance = new Chart(ctx, {
-		            type: 'bar',
-		            data: {
-		                labels: chartData.map(d => d.word),
-		                datasets: [{
-		                    label: 'Alignment Score',
-		                    data: chartData.map(d => d.score),
-		                    backgroundColor: '#1e3a8a',
-		                    borderRadius: 4,
-		                    barThickness: 'flex', maxBarThickness: 30
-		                }]
-		            },
-		            options: {
-		                responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-		                animation: false, 
-		                plugins: { legend: { display: false } },
-		                scales: {
-		                    y: { grid: { display: false } },
-		                    x: { grid: { color: '#f1f5f9' }, title: {display:true, text:'Overuse Score'} }
-		                }
-		            }
-		        });
-		    },
+                        this.$nextTick(() => this.renderChart());
+                    } catch (e) {
+                        console.error(e);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
 
-		    updateURL() {
-		        const url = new URL(window.location);
-		        url.searchParams.set('lang', this.selection.lang);
-		        url.searchParams.set('register', this.selection.register);
-		        url.searchParams.set('model', this.selection.model);
-		        window.history.pushState({}, '', url);
-		    },
+                renderChart() {
+                    if (this.chartInstance) {
+                        this.chartInstance.destroy();
+                        this.chartInstance = null;
+                    }
 
-		    formatK(num) {
-		        if (!num) return '-';
-		        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-		        if (num >= 1000) return (num / 1000).toFixed(0) + 'k';
-		        return num;
-		    },
+                    if (this.view !== 'chart') return;
 
-		    capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; },
-		    formatModel(s) { return s ? s.toUpperCase() : ''; }
-		}
-	    }
-	</script>
+                    const canvas = document.getElementById('mainChart');
+                    if (!canvas) return;
+
+                    const ctx = canvas.getContext('2d');
+
+                    const chartData = this.displayData.slice(0, 15);
+                    if (chartData.length === 0) return;
+
+                    this.chartInstance = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: chartData.map(d => d.word),
+                            datasets: [{
+                                label: 'Alignment Score',
+                                data: chartData.map(d => d.score),
+                                backgroundColor: '#1e3a8a',
+                                borderRadius: 4,
+                                barThickness: 'flex',
+                                maxBarThickness: 30
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            indexAxis: 'y',
+                            animation: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { grid: { display: false } },
+                                x: { grid: { color: '#f1f5f9' }, title: { display: true, text: 'Overuse Score' } }
+                            }
+                        }
+                    });
+                },
+
+                updateURL() {
+                    const url = new URL(window.location);
+                    url.searchParams.set('lang', this.selection.lang);
+                    url.searchParams.set('register', this.selection.register);
+                    url.searchParams.set('model', this.selection.model);
+                    window.history.pushState({}, '', url);
+                },
+
+                formatK(num) {
+                    if (!num) return '-';
+                    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+                    if (num >= 1000) return (num / 1000).toFixed(0) + 'k';
+                    return num;
+                },
+
+                capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; },
+                formatModel(s) { return s ? s.toUpperCase() : ''; }
+            }
+        }
+    </script>
 </body>
 </html>
 
