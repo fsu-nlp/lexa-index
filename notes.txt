@@ -1,25 +1,3 @@
 add gemini
 
-About the Explorer
-Mapping how AI word usage differs from human language. 
 
-Research Origin
-This project is the implementation of research conducted at the FSU NLP Lab. It is motivated by the observation 
-AI has its own language style, encountered by millions of people every day. It may influence how we use language. Our research identifies words AI overuses and the mechanisms behind them. Use this site to explore AI word overuse. 
-
-But our research goes further: It asks WHY do the models have a style that can diverge so much. A considerable part seems to be Reinforcement Learning from Human Feedback; with many questions still underexplored (such as, what is the role of demographics, what is the influence of the task, etc.). 
-
-Critically, we needed a method 
-The methodology and underlying framework were developed by Tommie and Zina, focusing on quantifying how Large Language Models (LLMs) drift from human baselines across different writing styles and genres.
-
-Background & Motivation
-Recent research indicates that written language, especially in scientific and educational settings, is undergoing rapid vocabulary changes attributed to the influence of AI tools. This project investigates whether these differences merely reflect the use of AI, or if they signal a deeper change in the human language system itself—where speakers increasingly adopt "modelese" (AI accents) even in unscripted interactions. By quantifying this alignment, we aim to better understand the potential for machine-generated text to reshape human communication.
-
-Visualizing the Method
-How we track word frequency (Windowed Prevalence) across documents (the following video is a placeholder):
-
-
-The Scoring System (LAS)
-We use the Lexical Alignment Score (LAS) to put a number on the "AI accent." In simple terms, this score measures the gap between how often an AI uses a word versus how often a human uses it. Technically, this is the difference in windowed prevalence: the probability that a specific word appears within a fixed window (e.g., 50 words) in AI text vs. human text.
-
-To ensure mathematical robustness for experts, we apply Jeffreys smoothing to stabilize estimates for rare words. Individual word scores are then aggregated using a length-normalized root-mean-square (RMS) metric. This approach prevents single repetitive documents from skewing the data, highlighting words that are systematically "overused" across the model's entire output.
