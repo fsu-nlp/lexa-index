@@ -1,5 +1,7 @@
 # LexA-Index | Lexical Alignment for LLMs 📊
 
+AI generated placeholder: 
+
 **LexA-Index** is an interactive web visualization tool designed to identify and analyze words significantly overused by AI compared to human baselines across various languages, registers, and model architectures.
 
 Developed at the **FSU NLP Lab**, this project quantifies the "drift" in machine-generated text, highlighting the emergence of "modelese."
