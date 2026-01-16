@@ -1,33 +1,57 @@
-# LexA-Index | Lexical Alignment for LLMs 📊
+# LexA-Index (AI Word Overuse Explorer)
 
-AI generated placeholder: 
+The Explorer lets you explore words that are systematically overused by AI models compared to human baselines, across multiple languages, registers, and AI models.
 
-**LexA-Index** is an interactive web visualization tool designed to identify and analyze words significantly overused by AI compared to human baselines across various languages, registers, and model architectures.
-
-Developed at the **FSU NLP Lab**, this project quantifies the "drift" in machine-generated text, highlighting the emergence of "modelese."
-
-## 🔍 Key Features
-
-* **Interactive Explorer:** Filter data by Model, Register (e.g., News, Science), and Language.
-* **Dual Views:** Toggle between visual **Charts** and detailed **Data Tables**.
-* **Metric Analysis:** View data sorted by **Lexical Alignment Score (LAS)** and **Occurrences Per Million (OPM)**.
-* **POS Filtering:** Isolate Content words vs. Function words.
-* **Deep Dive:** Automated insights carousel highlighting the most divergent vocabulary.
-
-## 📐 Methodology
-
-The core metric is the **Lexical Alignment Score (LAS)**, which calculates the difference in windowed prevalence between AI and Human text.
+This repository contains:
+- the website (`index.html`, `about.html`)
+- the CSV outputs (as a 7z, unzip in the top level folder)
+- a small script to build website-ready json's from the cvs's (`build_data.py`).
 
 
+## What this is for
 
-1.  **Input:** Raw experimental data (CSV) and summary statistics (JSON).
-2.  **Processing:** A Python pipeline normalizes frequencies using a fixed window size ($K$) to calculate the likelihood of appearance.
-3.  **Visualization:** The static web interface renders these divergences using `Chart.js` and `Alpine.js`.
+With this repo, you can:
+- reproduce the website data build locally,
+- inspect the underlying csv's,
+- and interactively visualise results for all available language/register/model combinations.
 
-## 🚀 Quick Start
+Motivation and background are summarised on the About page. :contentReference[oaicite:1]{index=1}
 
-### 1. Data Generation
-Place your raw experimental outputs in the `raw_data/` directory and run the processor:
+
+## Quick start
+
+- Clone
+- Unpack the .7z
+- Generate them from the CSVs with:
 
 ```bash
-python process_data.py
+python3 build_data.py
+```
+
+- Serve locally
+
+```bash
+python3 -m http.server
+```
+
+Then open:
+
+* [http://localhost:8000/](http://localhost:8000/)
+
+
+## Key metrics include:
+
+* LAS Score: Laid out in our paper
+* OPM: occurrences per million tokens (AI and human)
+* Ratio: AI OPM / human OPM
+
+
+## Licence
+
+tbd
+
+
+## Contact
+
+tbd
+

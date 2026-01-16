@@ -2,7 +2,7 @@
   {
     "type": "tip",
     "title": "Beta Data Coverage",
-    "text": "This index is currently in Beta with limited coverage. The 'Science' register is restricted to English and select models, while 'News' features GPT-4.1-mini data and many different languages."
+    "text": "This index is currently in Beta with limited coverage. The 'Science' register is restricted to English and select models. Select GPT-4, to access multilingual data in the News register."
   },
   {
     "type": "about",
