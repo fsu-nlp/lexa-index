@@ -15,7 +15,7 @@ With this repo, you can:
 - inspect the underlying csv's,
 - and interactively visualise results for all available language/register/model combinations.
 
-Motivation and background are summarised on the About page. :contentReference[oaicite:1]{index=1}
+Motivation and background are summarised on the About page.
 
 
 ## Quick start
