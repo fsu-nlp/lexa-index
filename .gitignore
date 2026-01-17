@@ -3,3 +3,4 @@ __pycache__/
 *.egg-info/
 *.egg
 csv_files
+video_notes.txt
