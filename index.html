@@ -336,16 +336,20 @@
                                         <th scope="col" class="px-4 py-3 bg-slate-50">Word</th>
                                         <th scope="col" class="px-4 py-3 bg-slate-50">POS</th>
                                         <th scope="col" class="px-4 py-3 text-right bg-slate-50">
-                                            <span x-text="sortBy === 'distinctiveness' ? 'KL-DIV' : 'LAS'" title="Lexical Alignment Score vs KL Divergence"></span>
+                                            <span x-text="sortBy === 'distinctiveness' ? 'KLD' : 'LAS'" title="Lexical Alignment Score vs KL Divergence"></span>
                                         </th>
                                         <th scope="col" class="px-4 py-3 text-right bg-slate-50">AI OPM</th>
                                         <th scope="col" class="px-4 py-3 text-right bg-slate-50">Ratio</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
-                                    <template x-for="row in displayData" :key="row.rank">
+                                    <template x-for="row in displayData" :key="row.rank_volume">
                                         <tr class="hover:bg-slate-50 transition-colors">
-                                            <td class="px-4 py-2.5 text-slate-400 font-mono text-xs" x-text="row.rank"></td>
+                                            
+                                            <td class="px-4 py-2.5 text-slate-400 font-mono text-xs font-bold">
+                                                <span x-text="sortBy === 'distinctiveness' ? row.rank_impact : row.rank_volume"></span>
+                                            </td>
+
                                             <td class="px-4 py-2.5 font-medium text-slate-800" x-text="row.word"></td>
                                             
                                             <td class="px-4 py-2.5">
@@ -356,7 +360,7 @@
                                             </td>
                                             
                                             <td class="px-4 py-2.5 text-right font-mono text-slate-600 font-medium" 
-                                                x-text="sortBy === 'distinctiveness' ? (row.distinctiveness ? row.distinctiveness.toFixed(4) : '-') : (row.score ? row.score.toFixed(2) : '-')"></td>
+                                                x-text="sortBy === 'distinctiveness' ? (row.distinctiveness ? row.distinctiveness.toFixed(4) : '-') : (row.score ? row.score.toFixed(4) : '-')"></td>
 
                                             <td class="px-4 py-2.5 text-right text-slate-500 text-xs" x-text="row.ai_freq"></td>
                                             
@@ -459,426 +463,427 @@
             <div>Last updated: <span class="font-mono text-slate-700">2026-01-14</span></div>
         </div>
     </footer>
-	<script>
-	    function app() {
-		return {
-		    ready: false,
-		    view: 'chart',
-		    filterMode: 'all',
-		    sortBy: 'las', // 'las' (Volume) or 'distinctiveness' (Impact)
-		    loading: false,
-		    chartInstance: null,
-		    inventory: [],
-		    data: [], 
-		    meta: {}, 
-		    
-		    globalInsights: [],
-		    insightIndex: 0,
 
-		    toast: {
-		        show: false,
-		        title: '',
-		        message: '',
-		        hint: '',
-		        _timer: null
-		    },
-		    
-		    selection: { model: 'gpt-5.2', register: 'science', lang: 'en' },
+    <script>
+        function app() {
+            return {
+                ready: false,
+                view: 'chart',
+                filterMode: 'all',
+                sortBy: 'las', // 'las' (Volume) or 'distinctiveness' (Impact)
+                loading: false,
+                chartInstance: null,
+                inventory: [],
+                data: [], 
+                meta: {}, 
+                
+                globalInsights: [],
+                insightIndex: 0,
 
-		    get generatedInsights() {
-		        if (!this.data.length && this.globalInsights.length) return this.globalInsights;
-		        if (!this.data.length) return [];
+                toast: {
+                    show: false,
+                    title: '',
+                    message: '',
+                    hint: '',
+                    _timer: null
+                },
+                
+                selection: { model: 'gpt-5.2', register: 'science', lang: 'en' },
 
-		        let sortedSource = [...this.data];
-		        if (this.sortBy === 'distinctiveness') {
-		            sortedSource.sort((a, b) => (b.distinctiveness || 0) - (a.distinctiveness || 0));
-		        } else {
-		            sortedSource.sort((a, b) => b.score - a.score);
-		        }
+                get generatedInsights() {
+                    if (!this.data.length && this.globalInsights.length) return this.globalInsights;
+                    if (!this.data.length) return [];
 
-		        const cards = [];
-		        const top = sortedSource[0];
-		        
-		        const topSlice = sortedSource.slice(0, 100);
-		        const verb = topSlice.find(d => d.upos === 'VERB');
-		        const noun = topSlice.find(d => d.upos === 'NOUN');
-		        const adj = topSlice.find(d => d.upos === 'ADJ');
+                    let sortedSource = [...this.data];
+                    if (this.sortBy === 'distinctiveness') {
+                        sortedSource.sort((a, b) => (b.distinctiveness || 0) - (a.distinctiveness || 0));
+                    } else {
+                        sortedSource.sort((a, b) => b.score - a.score);
+                    }
 
-		        // 1. Dynamic Summary Card
-		        cards.push({
-		            type: 'summary',
-		            title: this.sortBy === 'distinctiveness' ? 'Highest Impact' : 'Highest Volume',
-		            main: top,
-		            leaders: [
-		                { pos: 'VERB', word: verb ? verb.word : '-' },
-		                { pos: 'NOUN', word: noun ? noun.word : '-' },
-		                { pos: 'ADJ',  word: adj ? adj.word : '-' }
-		            ]
-		        });
+                    const cards = [];
+                    const top = sortedSource[0];
+                    
+                    const topSlice = sortedSource.slice(0, 100);
+                    const verb = topSlice.find(d => d.upos === 'VERB');
+                    const noun = topSlice.find(d => d.upos === 'NOUN');
+                    const adj = topSlice.find(d => d.upos === 'ADJ');
 
-		        // 2. Global Insights from JSON
-		        if (this.globalInsights.length) {
-		            cards.push(...this.globalInsights);
-		        } 
-		        
-		        return cards;
-		    },
+                    // 1. Dynamic Summary Card
+                    cards.push({
+                        type: 'summary',
+                        title: this.sortBy === 'distinctiveness' ? 'Highest Impact' : 'Highest Volume',
+                        main: top,
+                        leaders: [
+                            { pos: 'VERB', word: verb ? verb.word : '-' },
+                            { pos: 'NOUN', word: noun ? noun.word : '-' },
+                            { pos: 'ADJ',  word: adj ? adj.word : '-' }
+                        ]
+                    });
 
-		    get allModels() {
-		        if (!this.inventory.length) return [];
-		        return [...new Set(this.inventory.map(i => i.model))].sort();
-		    },
+                    // 2. Global Insights from JSON
+                    if (this.globalInsights.length) {
+                        cards.push(...this.globalInsights);
+                    } 
+                    
+                    return cards;
+                },
 
-		    get allRegistersForModel() {
-		        if (!this.inventory.length) return [];
-		        return [...new Set(this.inventory
-		            .filter(i => i.model === this.selection.model)
-		            .map(i => i.register)
-		        )].sort();
-		    },
+                get allModels() {
+                    if (!this.inventory.length) return [];
+                    return [...new Set(this.inventory.map(i => i.model))].sort();
+                },
 
-		    get allLanguagesForModel() {
-		        if (!this.inventory.length) return [];
-		        return [...new Set(this.inventory
-		            .filter(i => i.model === this.selection.model)
-		            .map(i => i.lang)
-		        )].sort();
-		    },
+                get allRegistersForModel() {
+                    if (!this.inventory.length) return [];
+                    return [...new Set(this.inventory
+                        .filter(i => i.model === this.selection.model)
+                        .map(i => i.register)
+                    )].sort();
+                },
 
-		    get modelRegisterCount() { return this.allRegistersForModel.length; },
-		    get modelLanguageCount() { return this.allLanguagesForModel.length; },
+                get allLanguagesForModel() {
+                    if (!this.inventory.length) return [];
+                    return [...new Set(this.inventory
+                        .filter(i => i.model === this.selection.model)
+                        .map(i => i.lang)
+                    )].sort();
+                },
 
-		    get displayData() {
-		        if (!this.data.length) return [];
-		        
-		        let result = [...this.data];
-		        
-		        const contentTags = ['NOUN', 'VERB', 'ADJ', 'ADV', 'PROPN'];
-		        if (this.filterMode === 'content') result = result.filter(d => d.upos && contentTags.includes(d.upos));
-		        else if (this.filterMode === 'function') result = result.filter(d => d.upos && !contentTags.includes(d.upos));
-		        
-		        if (this.sortBy === 'distinctiveness') {
-		            result.sort((a, b) => (b.distinctiveness || 0) - (a.distinctiveness || 0));
-		        } else {
-		            result.sort((a, b) => b.score - a.score);
-		        }
+                get modelRegisterCount() { return this.allRegistersForModel.length; },
+                get modelLanguageCount() { return this.allLanguagesForModel.length; },
 
-		        return result;
-		    },
+                get displayData() {
+                    if (!this.data.length) return [];
+                    
+                    let result = [...this.data];
+                    
+                    const contentTags = ['NOUN', 'VERB', 'ADJ', 'ADV', 'PROPN'];
+                    if (this.filterMode === 'content') result = result.filter(d => d.upos && contentTags.includes(d.upos));
+                    else if (this.filterMode === 'function') result = result.filter(d => d.upos && !contentTags.includes(d.upos));
+                    
+                    if (this.sortBy === 'distinctiveness') {
+                        result.sort((a, b) => (b.distinctiveness || 0) - (a.distinctiveness || 0));
+                    } else {
+                        result.sort((a, b) => b.score - a.score);
+                    }
 
-		    async initApp() {
-		        try {
-		            this.ready = false;
+                    return result;
+                },
 
-		            if (!this._pageshowBound) {
-		                this._pageshowBound = true;
-		                window.addEventListener('pageshow', (e) => {
-		                    if (e.persisted) this.initApp();
-		                });
-		            }
+                async initApp() {
+                    try {
+                        this.ready = false;
 
-		            const res = await fetch('data/index.json');
-		            if (!res.ok) throw new Error(`Could not load data/index.json`);
-		            this.inventory = await res.json();
+                        if (!this._pageshowBound) {
+                            this._pageshowBound = true;
+                            window.addEventListener('pageshow', (e) => {
+                                if (e.persisted) this.initApp();
+                            });
+                        }
 
-		            try {
-		                const resInsights = await fetch('insights.json');
-		                if (resInsights.ok) this.globalInsights = await resInsights.json();
-		            } catch (e) { console.warn("Insights file optional."); }
+                        const res = await fetch('data/index.json');
+                        if (!res.ok) throw new Error(`Could not load data/index.json`);
+                        this.inventory = await res.json();
 
-		            const params = new URLSearchParams(window.location.search);
-		            const preferred = { ...this.selection };
+                        try {
+                            const resInsights = await fetch('insights.json');
+                            if (resInsights.ok) this.globalInsights = await resInsights.json();
+                        } catch (e) { console.warn("Insights file optional."); }
 
-		            const desired = {
-		                model: params.get('model') || preferred.model,
-		                register: params.get('register') || preferred.register,
-		                lang: params.get('lang') || preferred.lang
-		            };
+                        const params = new URLSearchParams(window.location.search);
+                        const preferred = { ...this.selection };
 
-		            const models = this.allModels;
-		            const preferredOk = models.includes(preferred.model);
+                        const desired = {
+                            model: params.get('model') || preferred.model,
+                            register: params.get('register') || preferred.register,
+                            lang: params.get('lang') || preferred.lang
+                        };
 
-		            if (!models.includes(desired.model)) {
-		                desired.model = preferredOk ? preferred.model : (models[0] || desired.model);
-		            }
+                        const models = this.allModels;
+                        const preferredOk = models.includes(preferred.model);
 
-		            this.selection.model = desired.model;
-		            this.selection.register = desired.register;
-		            this.selection.lang = desired.lang;
+                        if (!models.includes(desired.model)) {
+                            desired.model = preferredOk ? preferred.model : (models[0] || desired.model);
+                        }
 
-		            this.validateSelection();
+                        this.selection.model = desired.model;
+                        this.selection.register = desired.register;
+                        this.selection.lang = desired.lang;
 
-		            this.ready = true;
+                        this.validateSelection();
 
-		            this.$nextTick(() => {
-		                const ms = document.getElementById('model-select');
-		                const rs = document.getElementById('register-select');
-		                const ls = document.getElementById('lang-select');
-		                if (ms) ms.value = this.selection.model;
-		                if (rs) rs.value = this.selection.register;
-		                if (ls) ls.value = this.selection.lang;
+                        this.ready = true;
 
-		                this.fetchData();
-		            });
+                        this.$nextTick(() => {
+                            const ms = document.getElementById('model-select');
+                            const rs = document.getElementById('register-select');
+                            const ls = document.getElementById('lang-select');
+                            if (ms) ms.value = this.selection.model;
+                            if (rs) rs.value = this.selection.register;
+                            if (ls) ls.value = this.selection.lang;
 
-		        } catch (err) {
-		            console.error(err);
-		            alert("Error: Cannot load data! Check data/index.json");
-		        }
-		    },
+                            this.fetchData();
+                        });
 
-		    onModelChange() {
-		        if (this.modelRegisterCount <= 1) this.showToastLimited('domain');
-		        else if (this.modelLanguageCount <= 1) this.showToastLimited('language');
-		        this.validateSelection();
-		        this.fetchData();
-		    },
+                    } catch (err) {
+                        console.error(err);
+                        alert("Error: Cannot load data! Check data/index.json");
+                    }
+                },
 
-		    onRegisterChange() {
-		        if (this.modelRegisterCount <= 1) this.showToastLimited('domain');
-		        this.validateSelection();
-		        this.fetchData();
-		    },
+                onModelChange() {
+                    if (this.modelRegisterCount <= 1) this.showToastLimited('domain');
+                    else if (this.modelLanguageCount <= 1) this.showToastLimited('language');
+                    this.validateSelection();
+                    this.fetchData();
+                },
 
-		    onLangChange() {
-		        if (this.modelLanguageCount <= 1) this.showToastLimited('language');
-		        this.validateSelection();
-		        this.fetchData();
-		    },
+                onRegisterChange() {
+                    if (this.modelRegisterCount <= 1) this.showToastLimited('domain');
+                    this.validateSelection();
+                    this.fetchData();
+                },
 
-		    setFilter(mode) {
-		        this.filterMode = mode;
-		        this.renderChart();
-		    },
+                onLangChange() {
+                    if (this.modelLanguageCount <= 1) this.showToastLimited('language');
+                    this.validateSelection();
+                    this.fetchData();
+                },
 
-		    nextInsight() {
-		        this.insightIndex = (this.insightIndex + 1) % this.generatedInsights.length;
-		    },
-		    prevInsight() {
-		        this.insightIndex = (this.insightIndex - 1 + this.generatedInsights.length) % this.generatedInsights.length;
-		    },
+                setFilter(mode) {
+                    this.filterMode = mode;
+                    this.renderChart();
+                },
 
-		    async fetchData() {
-		        if (!this.selection.model || !this.selection.lang || !this.selection.register) return;
+                nextInsight() {
+                    this.insightIndex = (this.insightIndex + 1) % this.generatedInsights.length;
+                },
+                prevInsight() {
+                    this.insightIndex = (this.insightIndex - 1 + this.generatedInsights.length) % this.generatedInsights.length;
+                },
 
-		        const exists = this.inventory.some(i => 
-		            i.model === this.selection.model && 
-		            i.register === this.selection.register && 
-		            i.lang === this.selection.lang
-		        );
-		        if (!exists) {
-		            console.warn("Triplet not in inventory:", this.selection);
-		            return;
-		        }
+                async fetchData() {
+                    if (!this.selection.model || !this.selection.lang || !this.selection.register) return;
 
-		        this.loading = true;
-		        this.updateURL();
+                    const exists = this.inventory.some(i => 
+                        i.model === this.selection.model && 
+                        i.register === this.selection.register && 
+                        i.lang === this.selection.lang
+                    );
+                    if (!exists) {
+                        console.warn("Triplet not in inventory:", this.selection);
+                        return;
+                    }
 
-		        const filename = `data/${this.selection.lang}_${this.selection.register}_${this.selection.model}.json`;
+                    this.loading = true;
+                    this.updateURL();
 
-		        try {
-		            const res = await fetch(filename);
-		            if (!res.ok) throw new Error(`Missing file: ${filename}`);
-		            const json = await res.json();
+                    const filename = `data/${this.selection.lang}_${this.selection.register}_${this.selection.model}.json`;
 
-		            this.data = (json.meta ? json.data : json.data || json).slice(0, 300);
-		            this.meta = json.meta || {};
-		            this.insightIndex = 0;
+                    try {
+                        const res = await fetch(filename);
+                        if (!res.ok) throw new Error(`Missing file: ${filename}`);
+                        const json = await res.json();
 
-		            this.$nextTick(() => this.renderChart());
-		        } catch (e) {
-		            console.error(e);
-		        } finally {
-		            this.loading = false;
-		        }
-		    },
+                        this.data = (json.meta ? json.data : json.data || json).slice(0, 300);
+                        this.meta = json.meta || {};
+                        this.insightIndex = 0;
 
-		    renderChart() {
-		        if (this.chartInstance) {
-		            this.chartInstance.destroy();
-		            this.chartInstance = null;
-		        }
+                        this.$nextTick(() => this.renderChart());
+                    } catch (e) {
+                        console.error(e);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
 
-		        if (this.view !== 'chart') return;
+                renderChart() {
+                    if (this.chartInstance) {
+                        this.chartInstance.destroy();
+                        this.chartInstance = null;
+                    }
 
-		        const canvas = document.getElementById('mainChart');
-		        if (!canvas) return;
+                    if (this.view !== 'chart') return;
 
-		        const ctx = canvas.getContext('2d');
+                    const canvas = document.getElementById('mainChart');
+                    if (!canvas) return;
 
-		        const chartData = this.displayData.slice(0, 15);
-		        if (chartData.length === 0) return;
+                    const ctx = canvas.getContext('2d');
 
-		        const isDist = this.sortBy === 'distinctiveness';
-		        const metricKey = isDist ? 'distinctiveness' : 'score';
-		        const labelText = isDist ? 'Impact Score' : 'Volume Score';
-		        const axisText = isDist ? 'Impact Score (KL-DIV)' : 'Volume Score (LAS)';
-		        
-		        const barColor = '#1e3a8a'; 
+                    const chartData = this.displayData.slice(0, 15);
+                    if (chartData.length === 0) return;
 
-		        this.chartInstance = new Chart(ctx, {
-		            type: 'bar',
-		            data: {
-		                labels: chartData.map(d => d.word),
-		                datasets: [{
-		                    label: labelText,
-		                    data: chartData.map(d => d[metricKey] || d.score), 
-		                    backgroundColor: barColor,
-		                    borderRadius: 4,
-		                    barThickness: 'flex',
-		                    maxBarThickness: 30
-		                }]
-		            },
-		            options: {
-		                responsive: true,
-		                maintainAspectRatio: false,
-		                indexAxis: 'y',
-		                animation: false,
-		                plugins: { legend: { display: false } },
-		                scales: {
-		                    y: { grid: { display: false } },
-		                    x: { 
-		                        grid: { color: '#f1f5f9' }, 
-		                        title: { 
-		                            display: true, 
-		                            text: axisText
-		                        } 
-		                    }
-		                }
-		            }
-		        });
-		    },
+                    const isDist = this.sortBy === 'distinctiveness';
+                    const metricKey = isDist ? 'distinctiveness' : 'score';
+                    const labelText = isDist ? 'Impact Score' : 'Volume Score';
+                    const axisText = isDist ? 'Impact Score (KLD)' : 'Volume Score (LAS)';
+                    
+                    const barColor = '#1e3a8a'; 
 
-		    updateURL() {
-		        const url = new URL(window.location);
-		        url.searchParams.set('lang', this.selection.lang);
-		        url.searchParams.set('register', this.selection.register);
-		        url.searchParams.set('model', this.selection.model);
-		        window.history.pushState({}, '', url);
-		    },
+                    this.chartInstance = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: chartData.map(d => d.word),
+                            datasets: [{
+                                label: labelText,
+                                data: chartData.map(d => d[metricKey] || d.score), 
+                                backgroundColor: barColor,
+                                borderRadius: 4,
+                                barThickness: 'flex',
+                                maxBarThickness: 30
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            indexAxis: 'y',
+                            animation: false,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { grid: { display: false } },
+                                x: { 
+                                    grid: { color: '#f1f5f9' }, 
+                                    title: { 
+                                        display: true, 
+                                        text: axisText
+                                    } 
+                                }
+                            }
+                        }
+                    });
+                },
 
-		    validateSelection() {
-		        const models = this.allModels;
-		        if (!models.length) return;
-		        if (!models.includes(this.selection.model)) this.selection.model = models[0];
+                updateURL() {
+                    const url = new URL(window.location);
+                    url.searchParams.set('lang', this.selection.lang);
+                    url.searchParams.set('register', this.selection.register);
+                    url.searchParams.set('model', this.selection.model);
+                    window.history.pushState({}, '', url);
+                },
 
-		        const regs = this.allRegistersForModel;
-		        if (!regs.length) return;
-		        if (!regs.includes(this.selection.register)) this.selection.register = regs[0];
+                validateSelection() {
+                    const models = this.allModels;
+                    if (!models.length) return;
+                    if (!models.includes(this.selection.model)) this.selection.model = models[0];
 
-		        const langs = this.allLanguagesForModel;
-		        if (!langs.length) return;
-		        if (!langs.includes(this.selection.lang)) this.selection.lang = langs[0];
+                    const regs = this.allRegistersForModel;
+                    if (!regs.length) return;
+                    if (!regs.includes(this.selection.register)) this.selection.register = regs[0];
 
-		        const ok = this.inventory.some(i => 
-		            i.model === this.selection.model && 
-		            i.register === this.selection.register && 
-		            i.lang === this.selection.lang
-		        );
+                    const langs = this.allLanguagesForModel;
+                    if (!langs.length) return;
+                    if (!langs.includes(this.selection.lang)) this.selection.lang = langs[0];
 
-		        if (!ok) {
-		            const first = this.inventory.find(i => i.model === this.selection.model);
-		            if (first) {
-		                this.selection.register = first.register;
-		                this.selection.lang = first.lang;
-		            }
-		        }
-		    },
+                    const ok = this.inventory.some(i => 
+                        i.model === this.selection.model && 
+                        i.register === this.selection.register && 
+                        i.lang === this.selection.lang
+                    );
 
-		    showToastLimited(type) {
-		        const isLang = type === 'language';
-		        const count = isLang ? this.modelLanguageCount : this.modelRegisterCount;
-		        const items = isLang ? this.allLanguagesForModel : this.allRegistersForModel;
-		        const currentItem = items[0] ? (isLang ? items[0].toUpperCase() : this.capitalize(items[0])) : '—';
-		        
-		        this.showToast({
-		            title: isLang ? 'Limited language options' : 'Limited domain options',
-		            message: `${this.formatModel(this.selection.model)} currently has only ${currentItem}.`,
-		            hint: `Switch model for more ${type} choices.`,
-		            ttl: 3200
-		        });
-		    },
+                    if (!ok) {
+                        const first = this.inventory.find(i => i.model === this.selection.model);
+                        if (first) {
+                            this.selection.register = first.register;
+                            this.selection.lang = first.lang;
+                        }
+                    }
+                },
 
-		    maybeToastLimited(which) {
-		        if (!this.inventory.length) return;
-		        if (which === 'register' && this.modelRegisterCount <= 1) this.showToastLimited('domain');
-		        if (which === 'lang' && this.modelLanguageCount <= 1) this.showToastLimited('language');
-		    },
+                showToastLimited(type) {
+                    const isLang = type === 'language';
+                    const count = isLang ? this.modelLanguageCount : this.modelRegisterCount;
+                    const items = isLang ? this.allLanguagesForModel : this.allRegistersForModel;
+                    const currentItem = items[0] ? (isLang ? items[0].toUpperCase() : this.capitalize(items[0])) : '—';
+                    
+                    this.showToast({
+                        title: isLang ? 'Limited language options' : 'Limited domain options',
+                        message: `${this.formatModel(this.selection.model)} currently has only ${currentItem}.`,
+                        hint: `Switch model for more ${type} choices.`,
+                        ttl: 3200
+                    });
+                },
 
-		    getRegisterAvailability(reg) {
-		        const valid = this.inventory.some(i => i.model === this.selection.model && i.register === reg && i.lang === this.selection.lang);
-		        if (valid) return { available: true, switchTarget: null };
-		        const fallback = this.inventory.find(i => i.model === this.selection.model && i.register === reg);
-		        return { available: false, switchTarget: fallback ? fallback.lang : null };
-		    },
+                maybeToastLimited(which) {
+                    if (!this.inventory.length) return;
+                    if (which === 'register' && this.modelRegisterCount <= 1) this.showToastLimited('domain');
+                    if (which === 'lang' && this.modelLanguageCount <= 1) this.showToastLimited('language');
+                },
 
-		    getLangAvailability(lng) {
-		        const valid = this.inventory.some(i => i.model === this.selection.model && i.register === this.selection.register && i.lang === lng);
-		        if (valid) return { available: true, switchTarget: null };
-		        const fallback = this.inventory.find(i => i.model === this.selection.model && i.lang === lng);
-		        return { available: false, switchTarget: fallback ? fallback.register : null };
-		    },
+                getRegisterAvailability(reg) {
+                    const valid = this.inventory.some(i => i.model === this.selection.model && i.register === reg && i.lang === this.selection.lang);
+                    if (valid) return { available: true, switchTarget: null };
+                    const fallback = this.inventory.find(i => i.model === this.selection.model && i.register === reg);
+                    return { available: false, switchTarget: fallback ? fallback.lang : null };
+                },
 
-		    getRegisterLabel(reg) {
-		        const status = this.getRegisterAvailability(reg);
-		        const label = this.capitalize(reg);
-		        if (status.available) return label;
-		        if (status.switchTarget) return `${label} \u27F6 switches to ${status.switchTarget.toUpperCase()}`;
-		        return label;
-		    },
+                getLangAvailability(lng) {
+                    const valid = this.inventory.some(i => i.model === this.selection.model && i.register === this.selection.register && i.lang === lng);
+                    if (valid) return { available: true, switchTarget: null };
+                    const fallback = this.inventory.find(i => i.model === this.selection.model && i.lang === lng);
+                    return { available: false, switchTarget: fallback ? fallback.register : null };
+                },
 
-		    getLangLabel(lng) {
-		        const status = this.getLangAvailability(lng);
-		        const label = lng.toUpperCase();
-		        if (status.available) return label;
-		        if (status.switchTarget) return `${label} \u27F6 switches to ${this.capitalize(status.switchTarget)}`;
-		        return label;
-		    },
+                getRegisterLabel(reg) {
+                    const status = this.getRegisterAvailability(reg);
+                    const label = this.capitalize(reg);
+                    if (status.available) return label;
+                    if (status.switchTarget) return `${label} \u27F6 switches to ${status.switchTarget.toUpperCase()}`;
+                    return label;
+                },
 
-		    showToast({ title, message, hint = '', ttl = 3800 }) {
-		        if (this.toast._timer) clearTimeout(this.toast._timer);
-		        this.toast.title = title;
-		        this.toast.message = message;
-		        this.toast.hint = hint;
-		        this.toast.show = true;
-		        this.toast._timer = setTimeout(() => {
-		            this.toast.show = false;
-		            this.toast._timer = null;
-		        }, ttl);
-		    },
+                getLangLabel(lng) {
+                    const status = this.getLangAvailability(lng);
+                    const label = lng.toUpperCase();
+                    if (status.available) return label;
+                    if (status.switchTarget) return `${label} \u27F6 switches to ${this.capitalize(status.switchTarget)}`;
+                    return label;
+                },
 
-		    hideToast() {
-		        if (this.toast._timer) clearTimeout(this.toast._timer);
-		        this.toast._timer = null;
-		        this.toast.show = false;
-		    },
+                showToast({ title, message, hint = '', ttl = 3800 }) {
+                    if (this.toast._timer) clearTimeout(this.toast._timer);
+                    this.toast.title = title;
+                    this.toast.message = message;
+                    this.toast.hint = hint;
+                    this.toast.show = true;
+                    this.toast._timer = setTimeout(() => {
+                        this.toast.show = false;
+                        this.toast._timer = null;
+                    }, ttl);
+                },
 
-		    downloadZip() {
-		        const url = new URL('csv_files.7z', window.location.href);
-		        const a = document.createElement('a');
-		        a.href = url.toString();
-		        a.download = 'csv_files.7z';
-		        document.body.appendChild(a);
-		        a.click();
-		        a.remove();
-		        this.showToast({
-		            title: 'Download started',
-		            message: 'Downloading csv_files.7z',
-		            hint: 'If nothing happens, ensure csv_files.7z is deployed next to index.html.'
-		        });
-		    },
+                hideToast() {
+                    if (this.toast._timer) clearTimeout(this.toast._timer);
+                    this.toast._timer = null;
+                    this.toast.show = false;
+                },
 
-		    formatK(num) {
-		        if (!num) return '-';
-		        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-		        if (num >= 1000) return (num / 1000).toFixed(0) + 'k';
-		        return num;
-		    },
+                downloadZip() {
+                    const url = new URL('csv_files.7z', window.location.href);
+                    const a = document.createElement('a');
+                    a.href = url.toString();
+                    a.download = 'csv_files.7z';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    this.showToast({
+                        title: 'Download started',
+                        message: 'Downloading csv_files.7z',
+                        hint: 'If nothing happens, ensure csv_files.7z is deployed next to index.html.'
+                    });
+                },
 
-		    capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; },
-		    formatModel(s) { return s ? s.toUpperCase() : ''; }
-		}
-	    }
-	</script>
+                formatK(num) {
+                    if (!num) return '-';
+                    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+                    if (num >= 1000) return (num / 1000).toFixed(0) + 'k';
+                    return num;
+                },
+
+                capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; },
+                formatModel(s) { return s ? s.toUpperCase() : ''; }
+            }
+        }
+    </script>
 </body>
 </html>

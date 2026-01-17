@@ -2,7 +2,7 @@ import os
 import csv
 import json
 import re
-import math  # Added for KL Divergence calculation
+import math
 
 # --- CONFIGURATION ---
 INPUT_ROOT = "csv_files"  # The root of your experiment outputs
@@ -96,37 +96,52 @@ def process_directory():
                         else:
                             ratio = None 
 
-                        # 5. Calculate Pointwise KL Divergence (Distinctiveness)
+                        # 5. Calculate Pointwise KL Divergence (Impact)
                         #    Formula: P(M) * log(P(M) / P(H))
-                        #    We use ell (prevalence) as P.
                         epsilon = 1e-9 # Small value to prevent division by zero
                         
                         if ell_m > 0 and ell_h > 0:
                             distinctiveness = ell_m * math.log(ell_m / ell_h)
                         elif ell_m > 0 and ell_h == 0:
-                            # Use epsilon for ell_h to avoid infinite score, 
-                            # or just use a high proxy based on ell_m
+                            # Use epsilon for ell_h to avoid infinite score
                             distinctiveness = ell_m * math.log(ell_m / epsilon)
                         else:
                             distinctiveness = 0.0
 
+                        # Store preliminary object (ranks will be assigned next)
                         clean_row = {
-                            "rank": int(row['rank_LAS']),
                             "word": row['form'],
                             "upos": row.get('upos', 'UNK'), 
-                            "score": round(float(row['LAS']), 4),
-                            
-                            # METRICS
+                            "score": float(row['LAS']),             # Volume (LAS)
+                            "distinctiveness": distinctiveness,     # Impact (KL)
                             "ai_freq": round(opm_ai, 2),
                             "human_freq": round(opm_human, 2),
                             "ratio": round(ratio, 1) if ratio is not None else None,
-                            "distinctiveness": round(distinctiveness, 5)
+                            "rank_volume": 0, # Placeholder
+                            "rank_impact": 0  # Placeholder
                         }
                         rows.append(clean_row)
                 
-                rows.sort(key=lambda x: x['rank'])
+                # --- 4. MULTI-PASS SORTING & RANKING ---
                 
-                # --- 4. SAVE OUTPUT ---
+                # Pass A: Sort by LAS (Volume) Descending -> Assign rank_volume
+                rows.sort(key=lambda x: x['score'], reverse=True)
+                for i, r in enumerate(rows):
+                    r['rank_volume'] = i + 1
+
+                # Pass B: Sort by KL (Impact) Descending -> Assign rank_impact
+                rows.sort(key=lambda x: x['distinctiveness'], reverse=True)
+                for i, r in enumerate(rows):
+                    r['rank_impact'] = i + 1
+
+                # Pass C: Final Sort by Volume (Default View) & Rounding
+                rows.sort(key=lambda x: x['rank_volume'])
+                
+                for r in rows:
+                    r['score'] = round(r['score'], 4)
+                    r['distinctiveness'] = round(r['distinctiveness'], 5)
+
+                # --- 5. SAVE OUTPUT ---
                 output_filename = f"{lang}_{register}_{model_clean}.json"
                 output_path = os.path.join(OUTPUT_DIR, output_filename)
                 
@@ -153,7 +168,7 @@ def process_directory():
             except Exception as e:
                 print(f"❌ Error processing CSV {csv_path}: {e}")
 
-    # --- 5. INDEX ---
+    # --- 6. INDEX ---
     with open(os.path.join(OUTPUT_DIR, "index.json"), 'w', encoding='utf-8') as f:
         json.dump(inventory, f)
     
