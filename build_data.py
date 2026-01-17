@@ -2,6 +2,7 @@ import os
 import csv
 import json
 import re
+import math  # Added for KL Divergence calculation
 
 # --- CONFIGURATION ---
 INPUT_ROOT = "csv_files"  # The root of your experiment outputs
@@ -72,11 +73,16 @@ def process_directory():
                     reader = csv.DictReader(f)
                     for row in reader:
                         
-                        # 1. Get raw counts
+                        # 1. Get raw counts (for OPM)
                         raw_count_ai = float(row['c_M']) if row.get('c_M') else 0.0
                         raw_count_human = float(row['c_H']) if row.get('c_H') else 0.0
                         
-                        # 2. Calculate OPM (Occurrences Per Million)
+                        # 2. Get Prevalence (ell) for Distinctiveness
+                        #    LAS score is based on these document frequencies.
+                        ell_m = float(row.get('ell_M', 0))
+                        ell_h = float(row.get('ell_H', 0))
+
+                        # 3. Calculate OPM (Occurrences Per Million)
                         if total_tokens > 0:
                             opm_ai = (raw_count_ai / total_tokens) * 1_000_000
                             opm_human = (raw_count_human / total_tokens) * 1_000_000
@@ -84,13 +90,25 @@ def process_directory():
                             opm_ai = 0.0
                             opm_human = 0.0
 
-                        # 3. Calculate Ratio (Multiplier)
-                        # If Human OPM is 0, ratio is mathematically infinite.
-                        # We set it to None (null in JSON) to let the UI handle it (e.g., showing "New" or ">100x")
+                        # 4. Calculate Ratio (Multiplier)
                         if opm_human > 0:
                             ratio = opm_ai / opm_human
                         else:
                             ratio = None 
+
+                        # 5. Calculate Pointwise KL Divergence (Distinctiveness)
+                        #    Formula: P(M) * log(P(M) / P(H))
+                        #    We use ell (prevalence) as P.
+                        epsilon = 1e-9 # Small value to prevent division by zero
+                        
+                        if ell_m > 0 and ell_h > 0:
+                            distinctiveness = ell_m * math.log(ell_m / ell_h)
+                        elif ell_m > 0 and ell_h == 0:
+                            # Use epsilon for ell_h to avoid infinite score, 
+                            # or just use a high proxy based on ell_m
+                            distinctiveness = ell_m * math.log(ell_m / epsilon)
+                        else:
+                            distinctiveness = 0.0
 
                         clean_row = {
                             "rank": int(row['rank_LAS']),
@@ -101,7 +119,8 @@ def process_directory():
                             # METRICS
                             "ai_freq": round(opm_ai, 2),
                             "human_freq": round(opm_human, 2),
-                            "ratio": round(ratio, 1) if ratio is not None else None
+                            "ratio": round(ratio, 1) if ratio is not None else None,
+                            "distinctiveness": round(distinctiveness, 5)
                         }
                         rows.append(clean_row)
                 

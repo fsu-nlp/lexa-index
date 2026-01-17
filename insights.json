@@ -2,12 +2,17 @@
   {
     "type": "tip",
     "title": "Beta Data Coverage",
-    "text": "This index is currently in Beta with limited coverage. The 'Science' register is restricted to English and select models. Select GPT-4, to access multilingual data in the News register."
+    "text": "This explorer is currently in <strong>Beta</strong> with limited coverage. The 'Science' register is restricted to English and select models. Select GPT-4, to access multilingual data in the News register."
   },
   {
     "type": "about",
     "title": "Methodology",
-    "text": "The Lexical Alignment Score is derived from windowed prevalence analysis. It offers a fully automated metric for divergence, eliminating the need for manual curation. Details in the <a href='#about' class='underline'>About section</a>."
+    "text": "<strong>Volume</strong> is based on the Lexical Alignment Score (LAS), which is derived from windowed document prevalence analysis. It offers a fully automated metric for divergence, eliminating the need for manual curation. Details in the <a href='#about' class='underline'>About section</a>."
+  },
+  {
+    "type": "about",
+    "title": "Methodology: Impact",
+    "text": "<strong>Impact</strong> is based on Pointwise Kullback-Leibler Divergence (KL-DIV). It identifies 'signature' terms that act as the strongest statistical signals of AI writing."
   },
   {
     "type": "finding",
