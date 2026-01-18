@@ -198,7 +198,7 @@
                                         </template>
                                     </select>
                                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center text-brand">
-                                        <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20" aria-hidden="true">
+                                        <svg class="h-4 h-4 w-4 fill-current" viewBox="0 0 20 20" aria-hidden="true">
                                             <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
                                         </svg>
                                     </div>
@@ -338,21 +338,7 @@
                                 </button>
                             </div>
 
-                            <!-- Rows shown (table) -->
-                            <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-2 py-1.5">
-                                <span class="text-[11px] font-semibold text-slate-500">Rows</span>
-                                <label for="rows-select" class="sr-only">Rows</label>
-                                <select
-                                    id="rows-select"
-                                    x-model.number="tableLimit"
-                                    class="text-[11px] font-semibold text-slate-700 bg-transparent focus:outline-none cursor-pointer"
-                                >
-                                    <option :value="200">200</option>
-                                    <option :value="300">300</option>
-                                    <option :value="500">500</option>
-                                    <option :value="1000">1000</option>
-                                </select>
-                            </div>
+                            <!-- Rows selector removed: tableLimit is fixed at 300 -->
                         </div>
                     </div>
                     
@@ -526,7 +512,7 @@
 
                 // UI state
                 query: '',
-                tableLimit: 300, // keep default at 300
+                tableLimit: 300, // fixed at 300
 
                 globalInsights: [],
                 insightIndex: 0,
@@ -628,7 +614,7 @@
                     // Rank-based ordering (fast)
                     result.sort((a, b) => this.rankValue(a) - this.rankValue(b));
 
-                    // Limit table rows (chart uses slice(0,15) anyway)
+                    // Fixed limit (300)
                     return result.slice(0, this.tableLimit);
                 },
 
@@ -1017,4 +1003,3 @@
     </script>
 </body>
 </html>
-
