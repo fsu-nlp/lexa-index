@@ -25,6 +25,17 @@ def clean_model_name(folder_name: str) -> str:
     return name
 
 
+# Unicode-aware "has at least one alphanumeric char" check.
+# Using str.isalnum() keeps this robust for non-Latin scripts.
+def has_any_alnum(token: str) -> bool:
+    if token is None:
+        return False
+    token = str(token).strip()
+    if not token:
+        return False
+    return any(ch.isalnum() for ch in token)
+
+
 def process_directory(
     input_root: str,
     output_dir: str,
@@ -88,6 +99,7 @@ def process_directory(
             rows = []
             n_rows_csv = 0
             n_rows_written = 0
+            n_rows_dropped_non_alnum = 0
 
             try:
                 with open(csv_path, "r", encoding="utf-8") as f:
@@ -95,6 +107,12 @@ def process_directory(
 
                     for row in reader:
                         n_rows_csv += 1
+
+                        # --- NEW: Drop tokens that are purely "special characters" ---
+                        form = row.get("form", "")
+                        if not has_any_alnum(form):
+                            n_rows_dropped_non_alnum += 1
+                            continue
 
                         # Raw counts (critical for LPR + smoothed ratio)
                         raw_count_ai = float(row["c_M"]) if row.get("c_M") else 0.0
@@ -143,7 +161,7 @@ def process_directory(
                         #   rk_las rank by LAS (desc)
                         #   rk_lpr rank by LPR (desc)
                         rows.append({
-                            "w": row.get("form", ""),
+                            "w": str(form).strip(),
                             "u": row.get("upos", "UNK"),
                             "las": las,
                             "lpr": lpr,
@@ -187,6 +205,7 @@ def process_directory(
                 #   sm   ratio_smooth
                 #   n0   n_rows_csv
                 #   n1   n_rows_written
+                #   nx   rows dropped for non-alnum
                 final_data = {
                     "meta": {
                         "np": n_pairs,
@@ -198,6 +217,7 @@ def process_directory(
                         "sm": ratio_smooth,
                         "n0": n_rows_csv,
                         "n1": n_rows_written,
+                        "nx": n_rows_dropped_non_alnum,
                     },
                     "data": rows,
                 }
@@ -214,7 +234,7 @@ def process_directory(
 
                 print(
                     f"✅ Generated: {lang.upper()} | {register} | {model_clean} "
-                    f"(N={n_pairs}, rows={n_rows_written}/{n_rows_csv})"
+                    f"(N={n_pairs}, rows={n_rows_written}/{n_rows_csv}, dropped_non_alnum={n_rows_dropped_non_alnum})"
                 )
 
             except Exception as e:
