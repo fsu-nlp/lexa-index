@@ -198,7 +198,7 @@
                                         </template>
                                     </select>
                                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center text-brand">
-                                        <svg class="h-4 h-4 w-4 fill-current" viewBox="0 0 20 20" aria-hidden="true">
+                                        <svg class="h-4 w-4 fill-current" viewBox="0 0 20 20" aria-hidden="true">
                                             <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/>
                                         </svg>
                                     </div>
@@ -282,8 +282,9 @@
                 
                 <div class="lg:col-span-8 p-6 relative flex flex-col border-b lg:border-b-0 lg:border-r border-slate-200">
                     
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                        <div>
+                    <!-- UPDATED: better desktop spacing + right-aligned wrapping controls -->
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center mb-6 gap-4">
+                        <div class="flex-1 min-w-0">
                             <h2 class="font-semibold text-slate-800" x-text="sortBy === 'distinctiveness' ? 'High Impact Words' : 'High Volume Words'">Top Overused Words</h2>
                             <p class="text-[11px] text-slate-500 font-medium mt-1">
                                 (<span x-text="formatK(meta.total_tokens)"></span> AI tokens vs 
@@ -293,7 +294,7 @@
                             <!-- NOTE REMOVED: workingSetInfo display -->
                         </div>
 
-                        <div class="flex flex-wrap gap-3 items-center">
+                        <div class="flex flex-wrap gap-3 items-center sm:justify-end ml-auto">
                             <div class="flex bg-slate-100 p-1 rounded-lg" role="group" aria-label="Word Filter">
                                 <button @click="setFilter('all')" :class="filterMode === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-3 py-1 rounded-md text-xs font-medium transition">All</button>
                                 <button @click="setFilter('content')" :class="filterMode === 'content' ? 'bg-white text-brand shadow-sm' : 'text-slate-500 hover:text-slate-700'" class="px-3 py-1 rounded-md text-xs font-medium transition">Content</button>
@@ -328,7 +329,7 @@
                                 />
                                 <button
                                     x-show="query.length"
-                                    @click="query=''; insightIndex=0; $nextTick(() => renderChart())"
+                                    @click="query=''; $nextTick(() => renderChart())"
                                     class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
                                     aria-label="Clear search"
                                 >
@@ -700,7 +701,6 @@
 
                 setFilter(mode) {
                     this.filterMode = mode;
-                    this.insightIndex = 0;
                     this.renderChart();
                 },
 
