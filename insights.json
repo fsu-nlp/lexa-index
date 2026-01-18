@@ -11,8 +11,8 @@
   },
   {
     "type": "about",
-    "title": "Methodology: Impact",
-    "text": "<strong>Impact</strong> is based on the Log Prevalence Ratio (LPR). It measures the <em>magnitude</em> of overuse and identifies 'spiking hallmark' words of AI."
+    "title": "Methodology: Spiking",
+    "text": "<strong>Spiking</strong> is based on the Log Prevalence Ratio (LPR). It measures the <em>magnitude</em> of overuse and identifies 'spiking hallmark' words of AI."
   },
   {
     "type": "finding",

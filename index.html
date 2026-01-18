@@ -263,7 +263,7 @@
                             class="px-4 py-1.5 rounded-md text-sm transition-all focus:outline-none"
                             title="Show words with highest relative overuse (Log Prevalence Ratio)"
                         >
-                            Impact
+                            Spiking
                         </button>
                     </div>
 
@@ -285,7 +285,7 @@
                     <!-- UPDATED: better desktop spacing + right-aligned wrapping controls -->
                     <div class="flex flex-col sm:flex-row items-start sm:items-center mb-6 gap-4">
                         <div class="flex-1 min-w-0">
-                            <h2 class="font-semibold text-slate-800" x-text="sortBy === 'distinctiveness' ? 'High Impact Words' : 'High Volume Words'">Top Overused Words</h2>
+                            <h2 class="font-semibold text-slate-800" x-text="sortBy === 'distinctiveness' ? 'Spiking Words' : 'High Volume Words'">Top Overused Words</h2>
                             <p class="text-[11px] text-slate-500 font-medium mt-1">
                                 (<span x-text="formatK(meta.total_tokens)"></span> AI tokens vs 
                                 <span x-text="formatK(meta.total_tokens)"></span> human tokens across 
@@ -374,7 +374,7 @@
                                         <tr class="hover:bg-slate-50 transition-colors">
                                             
                                             <td class="px-4 py-2.5 text-slate-400 font-mono text-xs font-bold">
-                                                <span x-text="sortBy === 'distinctiveness' ? (row.rank_impact ?? '-') : (row.rank_volume ?? '-')"></span>
+                                                <span x-text="sortBy === 'distinctiveness' ? (row.rank_spiking ?? '-') : (row.rank_volume ?? '-')"></span>
                                             </td>
 
                                             <td class="px-4 py-2.5 font-medium text-slate-800" x-text="row.word"></td>
@@ -438,7 +438,7 @@
                                             <span class="text-4xl font-bold text-slate-900 tracking-tight" x-text="'“' + generatedInsights[insightIndex].main.word + '”'"></span>
                                         </div>
                                         <p class="text-sm text-slate-500">
-                                            is the #1 most <span x-text="sortBy === 'distinctiveness' ? 'impactful' : 'overused'"></span> word overall.
+                                            is the #1 most <span x-text="sortBy === 'distinctiveness' ? 'spiking' : 'overused'"></span> word overall.
                                         </p>
                                     </div>
 
@@ -496,15 +496,15 @@
         function app() {
             return {
                 // --- Performance / relevance knobs ---
-                // Working set = union of top-by-volume + top-by-impact + pinned words.
+                // Working set = union of top-by-volume + top-by-spiking + pinned words.
                 WORKSET_TOP_VOLUME: 500,
-                WORKSET_TOP_IMPACT: 900,
+                WORKSET_TOP_SPIKING: 1000,
                 PINNED_WORDS: ['delve'], // add more if you like
 
                 ready: false,
                 view: 'chart',
                 filterMode: 'all',
-                sortBy: 'las', // 'las' (Volume) or 'distinctiveness' (Impact/LPR)
+                sortBy: 'las', // 'las' (Volume) or 'distinctiveness' (Spiking/LPR)
                 loading: false,
                 chartInstance: null,
                 inventory: [],
@@ -530,7 +530,7 @@
 
                 // --- Helpers for rank-based sorting (fast) ---
                 get sortKey() {
-                    return this.sortBy === 'distinctiveness' ? 'rank_impact' : 'rank_volume';
+                    return this.sortBy === 'distinctiveness' ? 'rank_spiking' : 'rank_volume';
                 },
 
                 rankValue(row) {
@@ -561,7 +561,7 @@
 
                     cards.push({
                         type: 'summary',
-                        title: this.sortBy === 'distinctiveness' ? 'Highest Impact (LPR)' : 'Highest Volume (LAS)',
+                        title: this.sortBy === 'distinctiveness' ? 'Spiking (LPR)' : 'Highest Volume (LAS)',
                         main: top,
                         leaders: [
                             { pos: 'VERB', word: verb ? verb.word : '-' },
@@ -722,7 +722,7 @@
                             total_tokens: meta.tt ?? meta.total_tokens ?? 0,
                             source_path: meta.src ?? meta.source_path ?? '',
                             mode: meta.md ?? meta.mode ?? '',
-                            min_ai_count_for_impact: meta.min ?? meta.min_ai_count_for_impact ?? 0,
+                            min_ai_count_for_spiking: meta.min ?? meta.min_ai_count_for_spiking ?? 0,
                             ratio_smooth: meta.sm ?? meta.ratio_smooth ?? 0,
                             n_rows_csv: meta.n0 ?? meta.n_rows_csv ?? 0,
                             n_rows_written: meta.n1 ?? meta.n_rows_written ?? 0
@@ -750,7 +750,7 @@
                         human_freq: (typeof r.h === 'number') ? r.h : 0,
                         ratio: (typeof r.r === 'number') ? r.r : null,
                         rank_volume: (typeof r.rk_las === 'number') ? r.rk_las : 0,
-                        rank_impact: (typeof r.rk_lpr === 'number') ? r.rk_lpr : 0
+                        rank_spiking: (typeof r.rk_lpr === 'number') ? r.rk_lpr : 0
                     }));
                 },
 
@@ -761,14 +761,14 @@
 
                     for (const r of rawRows) {
                         const rv = (typeof r.rank_volume === 'number') ? r.rank_volume : 1e18;
-                        const ri = (typeof r.rank_impact === 'number') ? r.rank_impact : 1e18;
+                        const ri = (typeof r.rank_spiking === 'number') ? r.rank_spiking : 1e18;
                         const w  = String(r.word || '').toLowerCase();
 
                         const inVolume = rv <= this.WORKSET_TOP_VOLUME;
-                        const inImpact = ri <= this.WORKSET_TOP_IMPACT;
+                        const inSpiking = ri <= this.WORKSET_TOP_SPIKING;
                         const isPinned = pinned.has(w);
 
-                        if (inVolume || inImpact || isPinned) keep.push(r);
+                        if (inVolume || inSpiking || isPinned) keep.push(r);
                     }
                     return keep;
                 },
@@ -833,8 +833,8 @@
 
                     const isDist = this.sortBy === 'distinctiveness';
                     const metricKey = isDist ? 'distinctiveness' : 'score';
-                    const labelText = isDist ? 'Impact Score' : 'Volume Score';
-                    const axisText = isDist ? 'Impact Score (LPR)' : 'Volume Score (LAS)';
+                    const labelText = isDist ? 'Spiking Score' : 'Volume Score';
+                    const axisText = isDist ? 'Spiking Score (LPR)' : 'Volume Score (LAS)';
                     
                     const barColor = '#1e3a8a'; 
 
