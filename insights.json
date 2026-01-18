@@ -6,13 +6,13 @@
   },
   {
     "type": "about",
-    "title": "Methodology",
+    "title": "Methodology: Volume",
     "text": "<strong>Volume</strong> is based on the Lexical Alignment Score (LAS), which is derived from windowed document prevalence analysis. It offers a fully automated metric for divergence, eliminating the need for manual curation. Details in the <a href='#about' class='underline'>About section</a>."
   },
   {
     "type": "about",
     "title": "Methodology: Impact",
-    "text": "<strong>Impact</strong> is based on Pointwise Kullback-Leibler Divergence (KL-DIV). It identifies 'signature' terms that act as the strongest statistical signals of AI writing."
+    "text": "<strong>Impact</strong> is based on the Log Prevalence Ratio (LPR). It measures the <em>magnitude</em> of overuse and identifies 'spiking hallmark' words of AI."
   },
   {
     "type": "finding",
