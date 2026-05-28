@@ -67,10 +67,15 @@ If you use the Explorer or the underlying word lists, please cite:
 
 ## Licence
 
-tbd
+Take this and run — no rights reserved beyond the disclaimers in the files below.
+
+- **Code** — [MIT No Attribution (MIT-0)](LICENSE): use, modify, and distribute freely, no attribution required, no warranty.
+- **Data / word lists** — [CC0 1.0](LICENSE-DATA): dedicated to the public domain.
+
+A citation of the paper is appreciated but **not** required — see [Citation](#citation).
 
 
 ## Contact
 
-tbd
+Thomas Stephan Juzek — tjuzek@fsu.edu · [FSU profile](https://ai.fsu.edu/research/thomas-stephan-juzek)
 
