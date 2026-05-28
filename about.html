@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About LexA-Index | Methodology & Research</title>
-    
-    <meta name="description" content="Discover the research behind LexA-Index. FSU NLP Lab investigates how AI word usage differs from human language using Windowed Prevalence and automated detection methods.">
+    <title>How AI Word Overuse Is Measured — Method & Papers | LexA-Index</title>
+
+    <meta name="description" content="How AI word overuse is measured across 34 languages: windowed prevalence, the Lexical Alignment Score, the research papers behind the AI slop / ghost-word findings, and how to cite them.">
     <meta name="keywords" content="Lexical Alignment Score, LAS, Windowed Prevalence, AI word overuse, NLP Research, FSU NLP, AI drift, Robo Talk, Algospeak, Modelese, AI detection, Computational Linguistics">
     <meta name="author" content="Thomas Stephan Juzek">
     <meta name="robots" content="index, follow">
@@ -40,7 +40,12 @@
       "author": {
         "@type": "Person",
         "name": "Thomas Stephan Juzek",
-        "url": "https://ai.fsu.edu/research/tom-juzek"
+        "url": "https://ai.fsu.edu/research/thomas-stephan-juzek",
+        "sameAs": [
+          "https://github.com/tjuzek",
+          "https://scholar.google.com/citations?user=ETFTr6sAAAAJ",
+          "https://orcid.org/0000-0002-3204-3879"
+        ]
       },
       "publisher": {
         "@type": "Organization",
@@ -152,7 +157,7 @@
 
                 <section class="mb-8">
                     <h2 class="text-xl font-bold text-slate-900 mb-6">Papers</h2>
-                    <p class="text-slate-600 mb-6">The Explorer is built on the following study:</p>
+                    <p class="text-slate-600 mb-6">The Explorer accompanies the following study:</p>
 
                     <div class="bg-slate-50 border border-slate-200 rounded-lg p-5 mb-8">
                         <div class="text-xs font-semibold uppercase tracking-wide text-brand mb-2">Main paper</div>
@@ -217,8 +222,9 @@
 
                 <section class="mb-8 border-t border-slate-100 pt-6">
                     <h2 class="text-xl font-bold text-slate-900 mb-4">Cite this Work</h2>
-                    <p class="text-slate-600 mb-4">If you use the Explorer or the underlying word lists, please cite:</p>
-                    <pre class="bg-slate-900 text-slate-100 text-xs rounded-lg p-4 overflow-x-auto"><code>@misc{juzek2026lexical,
+                    <div class="relative">
+                        <button type="button" onclick="copyBibtex(this)" class="absolute top-2 right-2 text-xs bg-white/10 hover:bg-white/20 text-slate-200 border border-white/20 rounded px-2 py-1 transition" aria-label="Copy BibTeX to clipboard">Copy</button>
+                        <pre class="bg-slate-900 text-slate-100 text-xs rounded-lg p-4 overflow-x-auto"><code id="bibtex">@misc{juzek2026lexical,
   title         = {AI-Associated Lexical Shifts Across 34 Languages:
                    Cross-Lingual Convergence and Diachronic Uptake in News Writing},
   author        = {Juzek, Thomas Stephan},
@@ -228,12 +234,13 @@
   primaryClass  = {cs.CL},
   url           = {https://arxiv.org/abs/2605.25358}
 }</code></pre>
+                    </div>
                 </section>
 
                 <section class="mb-6 border-t border-slate-100 pt-6">
                     <h2 class="text-xl font-bold text-slate-900 mb-4">Get in Touch</h2>
                     <p class="text-slate-600">
-                        Contact: <a href="https://ai.fsu.edu/research/tom-juzek" target="_blank" rel="noopener noreferrer" class="text-brand font-medium hover:underline">Tommie Juzek</a>
+                        Contact: <a href="https://ai.fsu.edu/research/thomas-stephan-juzek" target="_blank" rel="noopener noreferrer" class="text-brand font-medium hover:underline">Tommie Juzek</a>
                     </p>
                 </section>
 
@@ -252,9 +259,21 @@
     <footer class="bg-white border-t border-slate-200 py-8 mt-auto">
         <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
             <div>&copy; 2026 FSU NLP Lab.</div>
-            <div>Last updated: <span class="font-mono text-slate-700">2026-01-14</span></div>
+            <div>Last updated: <span class="font-mono text-slate-700">2026-05-28</span></div>
         </div>
     </footer>
+
+    <script>
+        function copyBibtex(btn) {
+            var code = document.getElementById('bibtex');
+            if (!code) return;
+            navigator.clipboard.writeText(code.innerText).then(function () {
+                var prev = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(function () { btn.textContent = prev; }, 2000);
+            });
+        }
+    </script>
 
 </body>
 </html>

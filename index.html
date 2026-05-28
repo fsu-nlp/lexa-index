@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LexA-Index | AI vs. Human Lexical Overuse Explorer</title>
-    
-    <meta name="description" content="Explore which words AI uses too much. Compare AI writing vs. human writing to find 'ghost words' and AI buzzwords.">
+    <title>AI Word Overuse Explorer — Words AI & ChatGPT Overuse | LexA-Index</title>
+
+    <meta name="description" content="Explore which words AI and ChatGPT overuse across 34 languages. An interactive tool comparing AI vs. human writing: delve, AI slop, ghost words, AI buzzwords, Modelese.">
     <meta name="keywords" content="LLM, Lexical Alignment, AI detection, AI misalignment, NLP, Computational Linguistics, AI word usage, Ghost Words, AI buzzwords, AI fluff, AI slop, AI slop, Robo Talk, Algospeak, Modelese, FSU NLP, Large Language Models">
     <meta name="author" content="Thomas Stephan Juzek">
     <meta name="robots" content="index, follow">
@@ -46,7 +46,12 @@
       "author": {
         "@type": "Person",
         "name": "Thomas Stephan Juzek",
-        "url": "https://ai.fsu.edu/research/tom-juzek"
+        "url": "https://ai.fsu.edu/research/thomas-stephan-juzek",
+        "sameAs": [
+          "https://github.com/tjuzek",
+          "https://scholar.google.com/citations?user=ETFTr6sAAAAJ",
+          "https://orcid.org/0000-0002-3204-3879"
+        ]
       },
       "publisher": {
         "@type": "Organization",
@@ -68,6 +73,29 @@
         "price": "0",
         "priceCurrency": "USD"
       }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Dataset",
+      "name": "AI-Associated Word Overuse Lists Across 34 Languages",
+      "description": "Lists of words systematically overused by large language models relative to human writing, derived for 34 languages from the WMT News Crawl using a split-halves continuation diagnostic and log prevalence ratios.",
+      "url": "https://www.aiwordexplorer.com/",
+      "keywords": ["AI word overuse", "lexical alignment", "large language models", "multilingual", "computational linguistics", "AI detection"],
+      "creator": {
+        "@type": "Person",
+        "name": "Thomas Stephan Juzek",
+        "url": "https://ai.fsu.edu/research/thomas-stephan-juzek"
+      },
+      "isAccessibleForFree": true,
+      "distribution": {
+        "@type": "DataDownload",
+        "encodingFormat": "application/x-7z-compressed",
+        "contentUrl": "https://github.com/fsu-nlp/lexa-index/raw/main/csv_files.7z"
+      },
+      "citation": "https://arxiv.org/abs/2605.25358"
     }
     </script>
 
@@ -501,10 +529,36 @@
         </div>
     </main>
 
+    <section class="bg-slate-50 border-t border-slate-200 py-12 px-4" aria-labelledby="findings-heading">
+        <div class="max-w-4xl mx-auto">
+            <h2 id="findings-heading" class="text-2xl font-bold text-slate-900 mb-3 text-center">Key Findings</h2>
+            <p class="text-slate-600 text-center max-w-2xl mx-auto mb-8">
+                Chat-aligned language models overuse a recognisable vocabulary — colloquially <em>delve</em> words, <em>AI slop</em>, <em>ghost words</em>, <em>AI buzzwords</em>, or <em>Modelese</em>. This AI word overuse is now measurable in real human news writing across dozens of languages.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-white rounded-xl border border-slate-200 p-6 text-center">
+                    <div class="text-3xl font-bold text-brand mb-1">34</div>
+                    <p class="text-sm text-slate-600">languages analysed in the WMT News Crawl, from English to Hindi, Arabic, and Chinese.</p>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 p-6 text-center">
+                    <div class="text-3xl font-bold text-brand mb-1">+15.1%</div>
+                    <p class="text-sm text-slate-600">average rise in AI-overused words in news after ChatGPT (2023–2024 vs. 2020–2021), while matched baseline words fell −4.5%.</p>
+                </div>
+                <div class="bg-white rounded-xl border border-slate-200 p-6 text-center">
+                    <div class="text-3xl font-bold text-brand mb-1">24 / 34</div>
+                    <p class="text-sm text-slate-600">languages where “emphasize”-type verbs are overused — evidence of cross-lingual semantic convergence.</p>
+                </div>
+            </div>
+            <p class="text-center text-sm text-slate-500 mt-6">
+                Based on peer-reviewed research on AI-associated lexical shifts across 34 languages. <a href="about.html" class="text-brand hover:underline">See the method and papers &rarr;</a>
+            </p>
+        </div>
+    </section>
+
     <footer class="bg-white border-t border-slate-200 py-8 mt-auto">
         <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
             <div>&copy; 2026 FSU NLP Lab.</div>
-            <div>Last updated: <span class="font-mono text-slate-700">2026-01-18</span></div>
+            <div>Last updated: <span class="font-mono text-slate-700">2026-05-28</span></div>
         </div>
     </footer>
 
