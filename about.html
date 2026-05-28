@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About LexA-Index | Methodology & Research</title>
     
-    <meta name="description" content="Discover the research behind LexA-Index. This site investigates how AI word usage differs from human language using automated lexical analysis methods.">
-    <meta name="keywords" content="Lexical Alignment Score, LAS, Windowed Prevalence, AI word overuse, NLP Research, AI drift, Robo Talk, Algospeak, Modelese, AI detection, Computational Linguistics">
-    <meta name="author" content="LexA-Index">
+    <meta name="description" content="Discover the research behind LexA-Index. FSU NLP Lab investigates how AI word usage differs from human language using Windowed Prevalence and automated detection methods.">
+    <meta name="keywords" content="Lexical Alignment Score, LAS, Windowed Prevalence, AI word overuse, NLP Research, FSU NLP, AI drift, Robo Talk, Algospeak, Modelese, AI detection, Computational Linguistics">
+    <meta name="author" content="Thomas Stephan Juzek">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://anonymous.4open.science/r/ai-34-languages-C2FB">
+    <link rel="canonical" href="https://www.aiwordexplorer.com/about.html">
 
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 
@@ -22,13 +22,13 @@
     <meta property="og:site_name" content="LexA-Index">
     <meta property="og:title" content="About LexA-Index | Research Methodology">
     <meta property="og:description" content="Mapping how AI word usage differs from human language.">
-    <meta property="og:url" content="https://anonymous.4open.science/r/ai-34-languages-C2FB">
-    <meta property="og:image" content="https://anonymous.4open.science/r/ai-34-languages-C2FB/social-preview.png">
+    <meta property="og:url" content="https://www.aiwordexplorer.com/about.html">
+    <meta property="og:image" content="https://www.aiwordexplorer.com/social-preview.png">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="About LexA-Index">
     <meta name="twitter:description" content="Mapping how AI word usage differs from human language.">
-    <meta name="twitter:image" content="https://anonymous.4open.science/r/ai-34-languages-C2FB/social-preview.png">
+    <meta name="twitter:image" content="https://www.aiwordexplorer.com/social-preview.png">
     
     <script type="application/ld+json">
     {
@@ -36,21 +36,21 @@
       "@type": "TechArticle",
       "headline": "Methodology: Quantifying AI Word Overuse",
       "alternativeHeadline": "Mapping how AI word usage differs from human language",
-      "image": "https://anonymous.4open.science/r/ai-34-languages-C2FB/social-preview.png",
+      "image": "https://www.aiwordexplorer.com/social-preview.png",
       "author": {
-        "@type": "Organization",
-        "name": "LexA-Index",
-        "url": "https://anonymous.4open.science/r/ai-34-languages-C2FB"
+        "@type": "Person",
+        "name": "Thomas Stephan Juzek",
+        "url": "https://ai.fsu.edu/research/tom-juzek"
       },
       "publisher": {
         "@type": "Organization",
-        "name": "LexA-Index",
+        "name": "FSU NLP Lab",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://anonymous.4open.science/r/ai-34-languages-C2FB/favicon.ico"
+          "url": "https://www.aiwordexplorer.com/favicon.ico"
         }
       },
-      "description": "Technical explanation of the research behind LexA-Index and lexical prevalence analysis.",
+      "description": "Technical explanation of the research behind LexA-Index and windowed prevalence analysis.",
       "articleSection": "Methodology",
       "keywords": "NLP, Large Language Models, Lexical Analysis, AI Detection"
     }
@@ -87,7 +87,7 @@
             <div class="flex items-center space-x-6 text-sm font-medium text-slate-600">
                 <a href="index.html" class="hover:text-brand transition">Explorer</a>
                 <a href="#" class="text-brand font-semibold" aria-current="page">About</a>
-                <a href="https://anonymous.4open.science/r/ai-34-languages-C2FB" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900 transition">GitHub</a>
+                <a href="https://github.com/fsu-nlp/lexa-index" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900 transition">GitHub</a>
             </div>
         </div>
     </nav>
@@ -109,28 +109,32 @@
                     <h2 class="text-2xl font-bold text-slate-900 mb-4">Research Motivation</h2>
                     <div class="text-slate-600 leading-relaxed text-lg space-y-4">
                         <p>
-                            This project implements research on AI-associated lexical overuse. It is motivated by three simple observations:
+                            This project is an implementation of research conducted at the <strong>FSU NLP Lab</strong>. It is motivated by three simple observations:
                         </p>
                         <ul class="list-decimal list-inside space-y-1 pl-2 font-medium text-slate-700">
                             <li>AI systems exhibit a distinct language style;</li>
-                            <li>millions of people interact with AI-generated language every day; and</li>
-                            <li>sustained exposure to this language may influence how humans write and speak.</li>
+                            <li>Millions of people interact with this AI-generated language every day; and</li>
+                            <li>Sustained exposure to this language may influence how humans write and speak.</li>
                         </ul>
                         <p class="mt-4">
-                            A central goal of this line of work is to develop a fully automated procedure for identifying words that are systematically overused by large language models. Automation makes it possible to scale the analysis across many languages, domains, and model architectures without manual curation. The Explorer makes this procedure accessible and interactive.
+                            One major goal of our research was to develop a fully automated procedure for identifying words that are systematically overused by large language models. Automation is crucial: it allows us to scale the analysis across many languages, domains, and model architectures without manual curation. The Explorer makes this procedure accessible and interactive. For a detailed explanation of the methodology, see the video below.
                         </p>
                     </div>
                 </section>
 
                 <section class="mb-8 border-b border-slate-100 pb-6">
-                    <h2 class="text-xl font-bold text-slate-900 mb-4">Methodological Focus</h2>
-                    <div class="prose prose-slate text-slate-600 leading-relaxed max-w-none">
-                        <p class="mb-4">
-                            The underlying methodology compares AI-generated continuations with matched human baselines and tracks lexical prevalence across documents. This makes it possible to identify words that appear disproportionately often in AI output.
-                        </p>
-                        <p>
-                            The broader aim is not only to identify <em>which</em> words are overused, but also to understand the mechanisms behind these patterns and how they vary across settings.
-                        </p>
+                    <h2 class="text-xl font-bold text-slate-900 mb-4">Visualising the Method</h2>
+                    <p class="text-slate-600 mb-4">How we track word frequency using <em>windowed prevalence</em> across documents:</p>
+                    
+                    <div class="relative w-full aspect-video bg-slate-900 rounded-lg overflow-hidden shadow-lg group mt-4">
+                        <iframe class="absolute inset-0 w-full h-full" 
+                                src="https://www.youtube.com/embed/_N-Z3WGMUFQ"
+                                title="Visualizing Windowed Prevalence in NLP" 
+                                loading="lazy"
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                allowfullscreen>
+                        </iframe>
                     </div>
                 </section>
 
@@ -138,18 +142,98 @@
                     <h2 class="text-xl font-bold text-slate-900 mb-4">The “Why”</h2>
                     <div class="prose prose-slate text-slate-600 leading-relaxed max-w-none">
                         <p class="mb-4">
-                            This research goes beyond identifying <em>which</em> words are overused. It asks <em>why</em> large language models develop language styles that diverge so strongly from human baselines.
+                            Our research goes beyond identifying <em>which</em> words are overused. It asks <em>why</em> large language models develop language styles that diverge so strongly from human baselines.
                         </p>
                         <p>
-                            A substantial part of this divergence appears to be linked to <strong>Reinforcement Learning from Human Feedback</strong> (RLHF). However, many aspects remain underexplored, including the role of annotator demographics, the influence of task framing, and the effects of different optimisation objectives on lexical behaviour. Understanding these mechanisms is important because millions of people are exposed to AI output and because linguistic alignment is only one part of the broader alignment problem.
+                            A substantial part of this divergence appears to be linked to <strong>Reinforcement Learning from Human Feedback</strong> (RLHF). However, many aspects remain underexplored: for example, the role of annotator demographics, the influence of task framing, or how different optimisation objectives influence lexical behaviour. It is essential to understand these mechanisms. As millions of people are exposed to AI output, we must ensure that this output is <em>aligned</em> with our expectations; linguistically and beyond. 
                         </p>
                     </div>
                 </section>
 
+                <section class="mb-8">
+                    <h2 class="text-xl font-bold text-slate-900 mb-6">Papers</h2>
+                    <p class="text-slate-600 mb-6">The Explorer is built on the following study:</p>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-lg p-5 mb-8">
+                        <div class="text-xs font-semibold uppercase tracking-wide text-brand mb-2">Main paper</div>
+                        <div class="text-sm text-slate-700">
+                            <strong>Juzek, T. S. (2026).</strong>
+                            <span class="italic">AI-Associated Lexical Shifts Across 34 Languages: Cross-Lingual Convergence and Diachronic Uptake in News Writing.</span>
+                            arXiv preprint arXiv:2605.25358.
+                        </div>
+                        <a href="https://arxiv.org/abs/2605.25358" target="_blank" rel="noopener noreferrer" class="text-brand hover:underline break-all text-sm">
+                            https://arxiv.org/abs/2605.25358
+                        </a>
+                    </div>
+
+                    <p class="text-slate-600 mb-6">Further related work:</p>
+
+                    <ul class="space-y-6 text-sm text-slate-600">
+                        <li class="flex flex-col gap-1">
+                            <div>
+                                <strong>Anderson, B., Galpin, R., & Juzek, T. S. (2025).</strong> 
+                                <span class="italic">Model Misalignment and Language Change: Traces of AI-Associated Language in Unscripted Spoken English.</span>
+                                Proceedings of the AAAI/ACM Conference on AI, Ethics, and Society, 8(1), 179–191.
+                            </div>
+                            <a href="https://ojs.aaai.org/index.php/AIES/article/view/36540/38678" target="_blank" rel="noopener noreferrer" class="text-brand hover:underline break-all">
+                                https://ojs.aaai.org/index.php/AIES/article/view/36540/38678
+                            </a>
+                        </li>
+
+                        <li class="flex flex-col gap-1">
+                            <div>
+                                <strong>Juzek, T. S., & Ward, Z. B. (2025).</strong> 
+                                <span class="italic">Word Overuse and Alignment in Large Language Models: The Influence of Learning from Human Feedback.</span>
+                                To appear in the BIAS25 proceedings.
+                            </div>
+                            <a href="https://arxiv.org/pdf/2508.01930" target="_blank" rel="noopener noreferrer" class="text-brand hover:underline break-all">
+                                https://arxiv.org/pdf/2508.01930
+                            </a>
+                        </li>
+
+                        <li class="flex flex-col gap-1">
+                            <div>
+                                <strong>Galpin, R., Anderson, B., & Juzek, T. S. (2025).</strong> 
+                                <span class="italic">Exploring the Structure of AI-Induced Language Change in Scientific English.</span>
+                                The International FLAIRS Conference Proceedings, 38.
+                            </div>
+                            <a href="https://journals.flvc.org/FLAIRS/article/view/138958/144064" target="_blank" rel="noopener noreferrer" class="text-brand hover:underline break-all">
+                                https://journals.flvc.org/FLAIRS/article/view/138958/144064
+                            </a>
+                        </li>
+
+                        <li class="flex flex-col gap-1">
+                            <div>
+                                <strong>Juzek, T. S., & Ward, Z. B. (2025).</strong> 
+                                <span class="italic">Why does ChatGPT “Delve” so much? Exploring the sources of lexical overrepresentation in Large Language Models.</span>
+                                Proceedings of the 31st International Conference on Computational Linguistics, 6397–6411.
+                            </div>
+                            <a href="https://aclanthology.org/2025.coling-main.426.pdf" target="_blank" rel="noopener noreferrer" class="text-brand hover:underline break-all">
+                                https://aclanthology.org/2025.coling-main.426.pdf
+                            </a>
+                        </li>
+                    </ul>
+                </section>
+
+                <section class="mb-8 border-t border-slate-100 pt-6">
+                    <h2 class="text-xl font-bold text-slate-900 mb-4">Cite this Work</h2>
+                    <p class="text-slate-600 mb-4">If you use the Explorer or the underlying word lists, please cite:</p>
+                    <pre class="bg-slate-900 text-slate-100 text-xs rounded-lg p-4 overflow-x-auto"><code>@misc{juzek2026lexical,
+  title         = {AI-Associated Lexical Shifts Across 34 Languages:
+                   Cross-Lingual Convergence and Diachronic Uptake in News Writing},
+  author        = {Juzek, Thomas Stephan},
+  year          = {2026},
+  eprint        = {2605.25358},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CL},
+  url           = {https://arxiv.org/abs/2605.25358}
+}</code></pre>
+                </section>
+
                 <section class="mb-6 border-t border-slate-100 pt-6">
-                    <h2 class="text-xl font-bold text-slate-900 mb-4">Project Link</h2>
+                    <h2 class="text-xl font-bold text-slate-900 mb-4">Get in Touch</h2>
                     <p class="text-slate-600">
-                        Repository: <a href="https://anonymous.4open.science/r/ai-34-languages-C2FB" target="_blank" rel="noopener noreferrer" class="text-brand font-medium hover:underline">Anonymous project page</a>
+                        Contact: <a href="https://ai.fsu.edu/research/tom-juzek" target="_blank" rel="noopener noreferrer" class="text-brand font-medium hover:underline">Tommie Juzek</a>
                     </p>
                 </section>
 
@@ -167,7 +251,7 @@
 
     <footer class="bg-white border-t border-slate-200 py-8 mt-auto">
         <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
-            <div>&copy; 2026 LexA-Index.</div>
+            <div>&copy; 2026 FSU NLP Lab.</div>
             <div>Last updated: <span class="font-mono text-slate-700">2026-01-14</span></div>
         </div>
     </footer>
