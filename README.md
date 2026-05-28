@@ -77,5 +77,5 @@ A citation of the paper is appreciated but **not** required — see [Citation](#
 
 ## Contact
 
-Thomas Stephan Juzek — tjuzek@fsu.edu · [FSU profile](https://ai.fsu.edu/research/thomas-stephan-juzek)
+Thomas Stephan Juzek — [FSU profile](https://ai.fsu.edu/research/thomas-stephan-juzek)
 
