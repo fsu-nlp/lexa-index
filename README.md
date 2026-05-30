@@ -50,20 +50,18 @@ Then open:
 
 ## Citation
 
-If you use the Explorer or the underlying word lists, please cite:
+If you use this code or data, a citation is appreciated (though not required; see the licence).
 
 ```bibtex
-@misc{juzek2026lexical,
-  title         = {AI-Associated Lexical Shifts Across 34 Languages: Cross-Lingual Convergence and Diachronic Uptake in News Writing},
-  author        = {Juzek, Thomas Stephan},
-  year          = {2026},
-  eprint        = {2605.25358},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.CL},
-  url           = {https://arxiv.org/abs/2605.25358}
+@article{juzek-2026-ai-34-languages,
+  title   = {AI-Associated Lexical Shifts Across 34 Languages: Cross-Lingual Convergence and Diachronic Uptake in News Writing},
+  author  = {Juzek, Thomas Stephan},
+  journal = {arXiv preprint arXiv:2605.25358},
+  year    = {2026},
+  doi     = {10.48550/arXiv.2605.25358},
+  url     = {https://arxiv.org/abs/2605.25358}
 }
 ```
-
 
 ## Licence
 
@@ -78,4 +76,3 @@ A citation of the paper is appreciated but **not** required — see [Citation](#
 ## Contact
 
 Thomas Stephan Juzek — [FSU profile](https://ai.fsu.edu/research/thomas-stephan-juzek)
-
