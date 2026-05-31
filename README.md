@@ -9,7 +9,6 @@ This repository contains:
 - the CSV outputs (as a 7z, unzip in the top level folder)
 - a small script to build website-ready json's from the cvs's (`build_data.py`).
 
-
 ## What this is for
 
 With this repo, you can:
@@ -19,6 +18,20 @@ With this repo, you can:
 
 Motivation and background are summarised on the About page.
 
+## Citation
+
+If you use this code or data, a citation is appreciated (though not required; see the licence).
+
+```bibtex
+@article{juzek-2026-ai-34-languages,
+  title   = {AI-Associated Lexical Shifts Across 34 Languages: Cross-Lingual Convergence and Diachronic Uptake in News Writing},
+  author  = {Juzek, Thomas Stephan},
+  journal = {arXiv preprint arXiv:2605.25358},
+  year    = {2026},
+  doi     = {10.48550/arXiv.2605.25358},
+  url     = {https://arxiv.org/abs/2605.25358}
+}
+```
 
 ## Quick start
 
@@ -40,28 +53,11 @@ Then open:
 
 * [http://localhost:8000/](http://localhost:8000/)
 
-
 ## Key metrics include:
 
 * LAS Score: Laid out in our paper
 * OPM: occurrences per million tokens (AI and human)
 * Ratio: AI OPM / human OPM
-
-
-## Citation
-
-If you use this code or data, a citation is appreciated (though not required; see the licence).
-
-```bibtex
-@article{juzek-2026-ai-34-languages,
-  title   = {AI-Associated Lexical Shifts Across 34 Languages: Cross-Lingual Convergence and Diachronic Uptake in News Writing},
-  author  = {Juzek, Thomas Stephan},
-  journal = {arXiv preprint arXiv:2605.25358},
-  year    = {2026},
-  doi     = {10.48550/arXiv.2605.25358},
-  url     = {https://arxiv.org/abs/2605.25358}
-}
-```
 
 ## Licence
 
@@ -70,10 +66,10 @@ If you use this code or data, a citation is appreciated (though not required; se
 
 A citation is not required but is appreciated; see the Citation section.
 
-## Contact
-
-Thomas Stephan Juzek — [FSU profile](https://ai.fsu.edu/research/thomas-stephan-juzek)
-
 ## AI Assistance
 
 Repository polished with Claude Code.
+
+## Contact
+
+Thomas Stephan Juzek — [FSU profile](https://ai.fsu.edu/research/thomas-stephan-juzek)
