@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Word Overuse Explorer — Words AI & ChatGPT Overuse | LexA-Index</title>
+    <title>AI Word Explorer — Words AI and ChatGPT Overuse Across 34 Languages</title>
 
     <meta name="description" content="Explore which words AI and ChatGPT overuse across 34 languages. An interactive tool comparing AI vs. human writing: delve, AI slop, ghost words, AI buzzwords, Modelese.">
     <meta name="keywords" content="LLM, Lexical Alignment, AI detection, AI misalignment, NLP, Computational Linguistics, AI word usage, Ghost Words, AI buzzwords, AI fluff, AI slop, AI slop, Robo Talk, Algospeak, Modelese, FSU NLP, Large Language Models">
@@ -19,19 +19,19 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
 
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="LexA-Index">
-    <meta property="og:title" content="AI Language Explorer | Lexical Alignment for LLMs">
+    <meta property="og:site_name" content="AI Word Explorer">
+    <meta property="og:title" content="AI Word Explorer — Words AI and ChatGPT Overuse">
     <meta property="og:description" content="Explore words overused by AI vs human baselines across languages, registers, and architectures.">
     <meta property="og:url" content="https://www.aiwordexplorer.com/">
-    <meta property="og:image" content="https://www.aiwordexplorer.com/social-preview.png">
-    <meta property="og:image:alt" content="LexA-Index Dashboard Preview">
+    <meta property="og:image" content="https://www.aiwordexplorer.com/social-preview.jpg">
+    <meta property="og:image:alt" content="AI Word Explorer — words AI and ChatGPT overuse across 34 languages">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="AI Language Explorer | Lexical Alignment for LLMs">
+    <meta name="twitter:title" content="AI Word Explorer — Words AI and ChatGPT Overuse">
     <meta name="twitter:description" content="Explore words overused by AI vs human baselines. A visual tool for NLP researchers.">
-    <meta name="twitter:image" content="https://www.aiwordexplorer.com/social-preview.png">
+    <meta name="twitter:image" content="https://www.aiwordexplorer.com/social-preview.jpg">
     
     <link rel="icon" href="/favicon.ico" sizes="any">
 
@@ -39,16 +39,20 @@
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "LexA-Index",
+      "name": "AI Word Explorer",
+      "alternateName": "LexA-Index",
+      "dateModified": "2026-05-31",
       "url": "https://www.aiwordexplorer.com/",
       "description": "A tool for exploring words overused by AI compared to human baselines across languages, registers, and architectures.",
       "applicationCategory": "EducationalApplication",
       "operatingSystem": "Web Browser",
       "author": {
         "@type": "Person",
+        "@id": "https://tjuzek.com/#person",
         "name": "Thomas Stephan Juzek",
-        "url": "https://ai.fsu.edu/research/thomas-stephan-juzek",
+        "url": "https://tjuzek.com/",
         "sameAs": [
+          "https://ai.fsu.edu/research/thomas-stephan-juzek",
           "https://github.com/tjuzek",
           "https://scholar.google.com/citations?user=ETFTr6sAAAAJ",
           "https://orcid.org/0000-0002-3204-3879"
@@ -84,11 +88,13 @@
       "name": "AI-Associated Word Overuse Lists Across 34 Languages",
       "description": "Lists of words systematically overused by large language models relative to human writing, derived for 34 languages from the WMT News Crawl using a split-halves continuation diagnostic and log prevalence ratios.",
       "url": "https://www.aiwordexplorer.com/",
+      "dateModified": "2026-05-31",
       "keywords": ["AI word overuse", "lexical alignment", "large language models", "multilingual", "computational linguistics", "AI detection"],
       "creator": {
         "@type": "Person",
+        "@id": "https://tjuzek.com/#person",
         "name": "Thomas Stephan Juzek",
-        "url": "https://ai.fsu.edu/research/thomas-stephan-juzek"
+        "url": "https://tjuzek.com/"
       },
       "isAccessibleForFree": true,
       "distribution": {
@@ -168,12 +174,13 @@
     <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm" aria-label="Main Navigation">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <a href="#" class="text-xl font-bold tracking-tight text-slate-900" aria-label="LexA-Index Home">LexA-Index</a>
+                <a href="#" class="text-xl font-bold tracking-tight text-slate-900" aria-label="AI Word Explorer Home">AI Word Explorer</a>
                 <span class="hidden sm:inline-block px-2 py-0.5 text-[10px] uppercase font-semibold bg-brand/10 text-brand rounded-full tracking-wide">Beta</span>
             </div>
             <div class="flex items-center space-x-6 text-sm font-medium text-slate-600">
                 <a href="#" class="hover:text-brand transition" aria-current="page">Explorer</a>
                 <a href="about.html" class="hover:text-brand transition">About</a>
+                <a href="words.html" class="hover:text-brand transition">Words by language</a>
                 <a href="https://github.com/fsu-nlp/lexa-index" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900 transition">GitHub</a>
             </div>
         </div>
@@ -317,7 +324,7 @@
                             <svg class="w-4 h-4 text-brand/70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
                             </svg>
-                            Select <span class="font-bold text-slate-600">GPT-4.1</span> to view many different languages.
+                            Select <span class="font-bold text-slate-600">GPT-4.1 mini</span> to view many different languages.
                         </span>
                     </p>
                 </div>
@@ -551,15 +558,15 @@
                 </div>
             </div>
             <p class="text-center text-sm text-slate-500 mt-6">
-                Based on peer-reviewed research on AI-associated lexical shifts across 34 languages. <a href="about.html" class="text-brand hover:underline">See the method and papers &rarr;</a>
+                Based on peer-reviewed research on AI-associated lexical shifts across 34 languages. <a href="words.html" class="text-brand hover:underline">Top overused words by language</a> &middot; <a href="about.html" class="text-brand hover:underline">the method and papers &rarr;</a>
             </p>
         </div>
     </section>
 
     <footer class="bg-white border-t border-slate-200 py-8 mt-auto">
         <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
-            <div>&copy; 2026 FSU NLP Lab.</div>
-            <div>Last updated: <span class="font-mono text-slate-700">2026-05-28</span></div>
+            <div>&copy; 2026 <a href="https://tjuzek.com/" class="hover:text-brand">TSJ</a> &middot; <a href="https://creativecommons.org/publicdomain/zero/1.0/" class="hover:text-brand">CC0 1.0</a> (no warranty) &middot; built with Gemini and <a href="https://www.anthropic.com/product/claude-code" class="hover:text-brand">Claude Code</a></div>
+            <div>Last updated: <span class="font-mono text-slate-700">2026-05-31</span></div>
         </div>
     </footer>
 

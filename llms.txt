@@ -1,10 +1,10 @@
-# LexA-Index — AI Word Overuse Explorer
+# AI Word Explorer
 
-> LexA-Index (aiwordexplorer.com) is an interactive tool for exploring which words large language models systematically overuse compared to human writing, across 34 languages, multiple registers, and several AI models. It accompanies the research paper *AI-Associated Lexical Shifts Across 34 Languages* by Thomas Stephan Juzek (Florida State University).
+> AI Word Explorer (aiwordexplorer.com, formerly LexA-Index) is an interactive tool for exploring which words large language models systematically overuse compared to human writing, across 34 languages, multiple registers, and several AI models. It accompanies the research paper *AI-Associated Lexical Shifts Across 34 Languages* by Thomas Stephan Juzek (Florida State University; https://tjuzek.com).
 
 ## Key findings
 
-- Chat-aligned language models show consistent lexical preferences across **34 languages** (WMT News Crawl corpus), measured by comparing GPT-4.1 continuations against human text using log prevalence ratios.
+- Chat-aligned language models show consistent lexical preferences across **34 languages** (WMT News Crawl corpus), measured by comparing GPT-4.1 mini continuations against human text using log prevalence ratios.
 - AI-overused vocabulary rose in real news writing after ChatGPT's release: prevalence increased in **26 of 34 languages** (mean change **+15.1%**), while matched baseline words did not (**−4.5%**).
 - Substantial cross-lingual semantic convergence: "emphasize"-type verbs are overused in **24 of 34 languages**.
 - Diachronic comparison (2020–2021 vs. 2023–2024) and longitudinal analysis of 10 languages show post-2022 increases exceeding earlier periods, though smaller than effects previously found in Scientific English.
@@ -17,6 +17,7 @@
 ## Explore
 
 - [AI Word Overuse Explorer](https://www.aiwordexplorer.com/): interactive site to inspect AI-overused words by language, register, and model.
+- [Words AI overuses, by language](https://www.aiwordexplorer.com/words.html): a static, readable list of the top 20 AI-overused words per language (ranked by Log Prevalence Ratio), across 34 languages.
 - [About & Methodology](https://www.aiwordexplorer.com/about.html): windowed prevalence method, Lexical Alignment Score (LAS), related papers, and citation details.
 
 ## Code & data

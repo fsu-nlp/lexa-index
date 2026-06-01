@@ -5,6 +5,8 @@ import json
 import re
 import math
 import argparse
+import html as _html
+import datetime
 
 # --- CONFIGURATION DEFAULTS ---
 DEFAULT_INPUT_ROOT = "csv_files"  # The root of your experiment outputs
@@ -247,6 +249,167 @@ def process_directory(
     print(f"\n🎉 Done! Created {len(inventory)} datasets.")
 
 
+# --- Per-language labels for words.html (item 7a: a static, crawler-readable page). ---
+# Each entry: (English name, autonym/endonym, native query phrase for "words AI overuses").
+# NOTE: the native phrasings are a DRAFT pending linguistic review before publish.
+LANG_INFO = {
+    "en": ("English", "English", "Words AI overuses"),
+    "nl": ("Dutch", "Nederlands", "Woorden die AI te vaak gebruikt"),
+    "de": ("German", "Deutsch", "Wörter, die KI zu oft benutzt"),
+    "fr": ("French", "Français", "Mots que l'IA surutilise"),
+    "es": ("Spanish", "Español", "Palabras que la IA usa en exceso"),
+    "it": ("Italian", "Italiano", "Parole che l'IA usa troppo"),
+    "pt": ("Portuguese", "Português", "Palavras que a IA usa em excesso"),
+    "ru": ("Russian", "Русский", "Слова, которые ИИ использует слишком часто"),
+    "uk": ("Ukrainian", "Українська", "Слова, які ШІ вживає надто часто"),
+    "pl": ("Polish", "Polski", "Słowa nadużywane przez AI"),
+    "cs": ("Czech", "Čeština", "Slova nadužívaná umělou inteligencí"),
+    "bg": ("Bulgarian", "Български", "Думи, които ИИ използва прекомерно"),
+    "el": ("Greek", "Ελληνικά", "Λέξεις που υπερχρησιμοποιεί η ΤΝ"),
+    "ro": ("Romanian", "Română", "Cuvinte suprautilizate de IA"),
+    "hr": ("Croatian", "Hrvatski", "Riječi koje AI prečesto koristi"),
+    "sr": ("Serbian", "Српски", "Речи које вештачка интелигенција прекомерно користи"),
+    "lt": ("Lithuanian", "Lietuvių", "Žodžiai, kuriuos DI vartoja per dažnai"),
+    "lv": ("Latvian", "Latviešu", "Vārdi, ko MI lieto pārāk bieži"),
+    "et": ("Estonian", "Eesti", "Sõnad, mida tehisintellekt liialt kasutab"),
+    "fi": ("Finnish", "Suomi", "Sanat, joita tekoäly käyttää liikaa"),
+    "is": ("Icelandic", "Íslenska", "Orð sem gervigreind ofnotar"),
+    "tr": ("Turkish", "Türkçe", "Yapay zekânın aşırı kullandığı kelimeler"),
+    "ar": ("Arabic", "العربية", "الكلمات التي يفرط الذكاء الاصطناعي في استخدامها"),
+    "fa": ("Persian", "فارسی", "واژه‌هایی که هوش مصنوعی زیاد به کار می‌برد"),
+    "hi": ("Hindi", "हिन्दी", "शब्द जो AI बहुत ज़्यादा इस्तेमाल करता है"),
+    "mr": ("Marathi", "मराठी", "AI जास्त वापरत असलेले शब्द"),
+    "ta": ("Tamil", "தமிழ்", "AI அதிகம் பயன்படுத்தும் சொற்கள்"),
+    "ja": ("Japanese", "日本語", "AIが多用する言葉"),
+    "ko": ("Korean", "한국어", "AI가 자주 쓰는 단어"),
+    "zh": ("Chinese", "中文", "AI 过度使用的词语"),
+    "id": ("Indonesian", "Bahasa Indonesia", "Kata-kata yang terlalu sering dipakai AI"),
+    "kk": ("Kazakh", "Қазақша", "Жасанды интеллект жиі қолданатын сөздер"),
+    "ky": ("Kyrgyz", "Кыргызча", "Жасалма интеллект көп колдонгон сөздөр"),
+    "af": ("Afrikaans", "Afrikaans", "Woorde wat KI te veel gebruik"),
+}
+
+WORDS_MODEL_LABEL = "GPT-4.1 mini"
+WORDS_TOP_N = 20
+
+_WORDS_CSS = (
+    "*{box-sizing:border-box}"
+    "body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:#0f172a;margin:0;line-height:1.55;background:#fff}"
+    ".wrap{max-width:920px;margin:0 auto;padding:0 20px}"
+    "header{background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:26px 0 30px}"
+    "header nav,footer{font-size:14px;color:#475569}"
+    "header nav a,footer a,.toc a{color:#1e3a8a;text-decoration:none}"
+    "header nav a:hover,footer a:hover,.toc a:hover{text-decoration:underline}"
+    "h1{font-size:30px;margin:14px 0 10px;color:#1e3a8a}"
+    ".intro{color:#475569;font-size:16px;max-width:780px;margin:0}"
+    ".note{color:#94a3b8;font-size:13px;max-width:780px;margin:10px 0 0}"
+    ".note a{color:#64748b}"
+    ".toc{padding:16px 0;border-bottom:1px solid #e2e8f0;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:14px}"
+    "main{padding:8px 0 40px}"
+    "section{padding:20px 0;border-bottom:1px solid #e2e8f0}"
+    "section h2{font-size:20px;margin:0 0 2px;color:#0f172a}"
+    "section h2 .en{color:#475569;font-weight:400;font-size:15px;margin-left:8px}"
+    ".native{font-weight:600;color:#1e3a8a;margin:2px 0 4px}"
+    ".desc{color:#475569;font-size:14px;margin:0 0 12px;max-width:820px}"
+    "ul.words{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:4px 18px}"
+    "ul.words li{display:flex;justify-content:space-between;border-bottom:1px dotted #e2e8f0;padding:3px 0}"
+    "ul.words .word{font-weight:600}"
+    "ul.words .ratio{color:#475569;font-variant-numeric:tabular-nums}"
+    "footer{padding:22px 0;color:#475569;font-size:14px;border-top:1px solid #e2e8f0}"
+)
+
+
+def build_words_page(output_dir: str, site_url: str = "https://www.aiwordexplorer.com") -> None:
+    """Generate words.html: top-N news words by LPR per language (item 7a).
+
+    Reads the already-built data/*_news_gpt4.1-mini.json so it does NOT depend on
+    csv_files being unpacked. Static, JS-free, for AI crawlers + readers. Output is
+    written next to this script (the site root), not into the data/ directory.
+    """
+    model_slug = "gpt4.1-mini"
+    build_date = datetime.date.today().isoformat()
+    ordered = ["en"] + sorted([c for c in LANG_INFO if c != "en"], key=lambda c: LANG_INFO[c][0])
+
+    toc_links = []
+    sections = []
+    n_langs = 0
+    for code in ordered:
+        path = os.path.join(output_dir, code + "_news_" + model_slug + ".json")
+        if not os.path.exists(path):
+            continue
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                d = json.load(f)
+        except Exception:
+            continue
+        rows = [r for r in d.get("data", []) if r.get("lpr", 0) > 0]
+        rows.sort(key=lambda x: x.get("lpr", 0), reverse=True)
+        top = rows[:WORDS_TOP_N]
+        if not top:
+            continue
+        en_name, autonym, native_q = LANG_INFO.get(code, (code.upper(), code, "Words AI overuses"))
+        n_langs += 1
+        toc_links.append('<a href="#' + code + '">' + _html.escape(autonym) + "</a>")
+        items = []
+        for r in top:
+            w = _html.escape(str(r.get("w", "")))
+            ratio = r.get("r", "")
+            items.append('<li><span class="word">' + w + '</span><span class="ratio">' + str(ratio) + "×</span></li>")
+        sections.append(
+            '<section id="' + code + '" lang="' + code + '">\n'
+            "  <h2>" + _html.escape(autonym) + ' <span class="en">' + _html.escape(en_name) + "</span></h2>\n"
+            '  <p class="native">' + _html.escape(native_q) + "</p>\n"
+            '  <p class="desc">The words ' + WORDS_MODEL_LABEL + " produces most disproportionately versus a matched human baseline in "
+            + _html.escape(en_name) + " news text — top " + str(len(top))
+            + " by Log Prevalence Ratio; the figure is how many times more frequent each word is in the model’s text.</p>\n"
+            '  <ul class="words">' + "".join(items) + "</ul>\n"
+            "</section>"
+        )
+
+    jsonld = json.dumps({
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Words AI overuses, by language",
+        "url": site_url + "/words.html",
+        "isPartOf": {"@type": "WebSite", "name": "AI Word Explorer", "url": site_url + "/"},
+        "dateModified": build_date,
+        "about": "Words overused by " + WORDS_MODEL_LABEL + " relative to a matched human baseline across 34 languages",
+        "author": {"@type": "Person", "name": "Thomas Stephan Juzek", "url": "https://ai.fsu.edu/research/thomas-stephan-juzek"},
+        "citation": "https://arxiv.org/abs/2605.25358",
+    }, ensure_ascii=False)
+
+    page = (
+        "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n"
+        "<meta charset=\"utf-8\">\n"
+        "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
+        "<title>Words AI Overuses, by Language | AI Word Explorer</title>\n"
+        "<meta name=\"description\" content=\"The words " + WORDS_MODEL_LABEL + " produces far more than a matched human baseline in news text — top " + str(WORDS_TOP_N) + " per language by Log Prevalence Ratio, across 34 languages. A measurement of model output.\">\n"
+        "<link rel=\"canonical\" href=\"" + site_url + "/words.html\">\n"
+        "<link rel=\"icon\" href=\"/favicon.ico\">\n"
+        "<style>" + _WORDS_CSS + "</style>\n"
+        "<script type=\"application/ld+json\">" + jsonld + "</script>\n"
+        "</head>\n<body>\n"
+        "<!-- words.html is generated by build_data.py. Native-language phrasings are DRAFT, pending linguistic review before publish. -->\n"
+        "<header><div class=\"wrap\">\n"
+        "<nav><a href=\"index.html\">Explorer</a> &middot; <a href=\"about.html\">About &amp; Method</a> &middot; <a href=\"https://github.com/fsu-nlp/lexa-index\">GitHub</a></nav>\n"
+        "<h1>Words AI overuses, by language</h1>\n"
+        "<p class=\"intro\">The words <strong>" + WORDS_MODEL_LABEL + "</strong> produces far more often than a matched human baseline in news text — the top " + str(WORDS_TOP_N) + " per language, ranked by Log Prevalence Ratio (LPR). The figure after each word is how many times more frequent it is in the model’s text than in human text. This describes the <em>model’s output</em>, not how people write or speak. See the <a href=\"about.html\">method and caveats</a>; data from <a href=\"https://arxiv.org/abs/2605.25358\">AI-Associated Lexical Shifts Across 34 Languages</a> (arXiv:2605.25358).</p>\n"
+        "<p class=\"note\">This page is auto-generated for search and AI indexing — the interactive <a href=\"index.html\">Explorer</a> is the main experience. The native-language headings are machine-assisted and may contain errors.</p>\n"
+        "</div></header>\n"
+        "<div class=\"wrap\">\n"
+        "<nav class=\"toc\" aria-label=\"Languages\">" + " ".join(toc_links) + "</nav>\n"
+        "<main>\n" + "\n".join(sections) + "\n</main>\n"
+        "<footer><p>&copy; 2026 <a href=\"https://tjuzek.com/\">TSJ</a> &middot; <a href=\"https://creativecommons.org/publicdomain/zero/1.0/\">CC0 1.0</a> (no warranty) &middot; built with Gemini and <a href=\"https://www.anthropic.com/product/claude-code\">Claude Code</a></p>"
+        "<p><a href=\"index.html\">Explorer</a> &middot; <a href=\"about.html\">About</a> &middot; Last updated: " + build_date + " &middot; " + str(n_langs) + " languages</p></footer>\n"
+        "</div>\n</body>\n</html>\n"
+    )
+
+    out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "words.html")
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(page)
+    print("📝 Generated words.html (" + str(n_langs) + " languages, top " + str(WORDS_TOP_N) + " by LPR)")
+
+
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Build JSON datasets for LexA-Index website.")
     p.add_argument("--input-root", default=DEFAULT_INPUT_ROOT, help="Root directory containing csv_files/ outputs.")
@@ -281,4 +444,5 @@ if __name__ == "__main__":
         mode=args.mode,
         ratio_smooth=args.ratio_smooth,
     )
+    build_words_page(output_dir=args.output_dir)
 
