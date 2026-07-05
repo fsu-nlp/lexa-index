@@ -401,7 +401,10 @@ def build_words_page(output_dir: str, site_url: str = "https://www.aiwordexplore
         "<main>\n" + "\n".join(sections) + "\n</main>\n"
         "<footer><p>&copy; 2026 <a href=\"https://tjuzek.com/\">TSJ</a> &middot; <a href=\"https://creativecommons.org/publicdomain/zero/1.0/\">CC0 1.0</a> (no warranty) &middot; built with Gemini and <a href=\"https://www.anthropic.com/product/claude-code\">Claude Code</a></p>"
         "<p><a href=\"index.html\">Explorer</a> &middot; <a href=\"about.html\">About</a> &middot; Last updated: " + build_date + " &middot; " + str(n_langs) + " languages</p></footer>\n"
-        "</div>\n</body>\n</html>\n"
+        "</div>\n"
+        "<!-- GoatCounter: private, cookieless visitor analytics (invisible to visitors) -->\n"
+        "<script data-goatcounter=\"https://aiwordexplorer.goatcounter.com/count\" async src=\"//gc.zgo.at/count.js\"></script>\n"
+        "</body>\n</html>\n"
     )
 
     out_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "words.html")
